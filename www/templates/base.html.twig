@@ -10,9 +10,20 @@
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
+<<<<<<< HEAD
+=======
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+>>>>>>> 3e6cac9 (add entity)
+        {% endblock %}
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+            <h1 class="text-3xl font-bold underline">
+                Hello world!
+            </h1>
+        {% endblock %}
     </body>
 </html>
