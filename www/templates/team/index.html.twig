@@ -3,7 +3,7 @@
 {% block title %}Team index{% endblock %}
 
 {% block body %}
-    <div class="max-h-screen bg-bg-main py-8">
+    <div class="bg-bg-main py-8">
         <div class="container-main">
             {% include "partials/_messages.html.twig" %}
             <!-- En tête -->
@@ -11,33 +11,86 @@
                 <h1 class="text-4xl text-gray-900 mb-2">Toute les équipes</h1>
                 <p class="text-gray-600">Découvrez et rejoinez l'équipe qui vous conviendra.</p>
             </div>
-            <a href="{{ path('app_team_new') }}" class="btn-primary">Crée mon équipe</a>
-        </div>
-        <div class="card-sm p-6 mb-8">
-            <form class="flex flex-col md:flex-row gap-4" action="{{ path('app_challenge_index') }}" method="get">
-                <!-- filtre de catégorie -->
-                <div class="flex-1">
-                    <label class="form-label" for="games">
-                        Sélectionner un jeu
-                    </label>
-                    <select name="game" id="games" class="form-select" onchange="this.form.submit()">
-                        <option value="0" {{ selectGame == 0 ? 'selected' : '' }}>Toutes les catégories</option>
-                        {% for category in caterogies %}
-                            <option
-                                value="{{ game.id }}" {{ selectCGame == game.id ? 'selcted' : '' }}> {{ game.label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <!-- button de renitialisation -->
-                {% if selectCategory != 0%}
-                    <div class="flex items-end">
-                        <a href="{{ path('app_challenge_index') }}" class="px-4 py-2 transition-colors link-nav">
-                            Rénitialiser
-                        </a>
-                    </div>
-                {% endif %}
-            </form>
+            <a href="{{ path('app_team_new') }}" class="btn-primary mb-6">Crée mon équipe</a>
 
+            <div class="card-sm p-6 mb-8">
+                <form class="flex flex-col md:flex-row gap-4" action="{{ path('app_team_index') }}" method="get">
+                    <!-- filtre de catégorie -->
+                    <div class="flex-1">
+                        <label class="form-label" for="games">
+                            Sélectionner un jeu
+                        </label>
+                        <select name="game" id="games" class="form-select" onchange="this.form.submit()">
+                            <option value="0" {{ selectGames == 0 ? 'selected' : '' }}>Toutes les jeux</option>
+                            {% for game in games %}
+                                <option
+                                    value="{{ game.id }}" {{ selectGames == game.id ? 'selcted' : '' }}> {{ game.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!-- button de renitialisation -->
+                    {% if selectGames != 0 %}
+                        <div class="flex items-end">
+                            <a href="{{ path('app_team_index') }}" class="px-4 py-2 transition-colors link-nav">
+                                Rénitialiser
+                            </a>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
+            {% if teams|length > 0 %}
+                <div class="container-main section-sm">
+                    <div class="gap-6 space-y-6">
+                        {% for team in teams %}
+                            <div class="card-hover p-6">
+                                <!-- En-tête de la carte -->
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="avatar-md">
+                                        <svg class="icon text-primary" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                        </svg>
+                                    </div>
+                                    <span class="badge-category-sm">Jeu Favori : {{ team.game.label ?? "Aucun jeu" }}</span>
+                                </div>
+
+                                <!-- Contenu -->
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                                    {{ team.name ?? "Sans titre" }}
+                                </h3>
+
+                                <p class="text-secondary text-sm line-clamp-3 mb-4">
+                                    {{ team.description ?? "Aucune description disponible" }}
+                                </p>
+
+                                <!-- Actions -->
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <a href="{{ path('app_team_show', {id :team.id}) }}"
+                                       class="btn-secondary-transparent">
+                                        Voir l'équipe
+                                        <svg class="icon-sm ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="container-medium section-sm">
+                    <div class="alert-info">
+                        <svg class="icon-sm mr-3 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                  clip-rule="evenodd"/>
+                        </svg>
+                        <span>Aucune équipe disponible pour le moment.</span>
+                    </div>
+                </div>
+            {% endif %}
         </div>
 
 
