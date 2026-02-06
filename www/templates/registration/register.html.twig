@@ -1,0 +1,131 @@
+{% extends "base.html.twig" %}
+ 
+{% block title %}Inscrie toi !
+{% endblock %}
+ 
+{% block body %}
+    <div class="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="container-form space-y-8">
+            <div class="text-center">
+                <a class="inline-block mb-8 group" href="{{ path( 'app_home' ) }}">
+                    <img class="h-16 mx-auto transition-transform duration-200 group-hover:scale-105" src="/images/logo_PLC.png" alt="creativhub">
+                </a>
+                <h1 class="text-3xl text-gray-900 mb-2">{{ "Inscription"|upper }}</h1>
+                <p class="text-sm text-gray-600">
+                    Déjà un compte ?
+                    <a class="font-medium transition-colors text-color-primary hover:text-primary-hover" href="{{ path('app_login') }}">Se connecter</a>
+                </p>
+            </div>
+            <!-- FORMULAIRE -->
+            <div class="card rounded-xl p-8">
+                {{ form_start(registrationForm, {'attr' : {'class' : 'space-y-6'}}) }}
+ 
+                {% if not registrationForm.vars.valid %}
+                    <div class="alert-error">
+                        <div class="flex">
+                            <div class="shrink-0">
+                                <svg class="icon text-red-400" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewbox="0 0 24 24"><path fill="currentColor" d="M12 17q.425 0 .713-.288T13 16t-.288-.712T12 15t-.712.288T11 16t.288.713T12 17m-1-4h2V7h-2zm1 9q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/></svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">Veuillez corriger les erreurs suivantes :</p>
+                                <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                                    {{ form_errors(registrationForm) }}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+ 
+                <!-- pseudo -->
+                <div class="">
+                    {% set pseudoHasError = registrationForm.pseudo.vars.errors|length > 0 %}
+                    {{ form_label(registrationForm.pseudo, null, {'label_attr': {'class': 'form_label'}}) }}
+                    {{ form_widget(registrationForm.pseudo, {'attr': {
+                        'class' : pseudoHasError ? 'form-input-error' : 'form-input',
+                        'placeholder' : "votre pseudo"
+                    }}) }}
+                    {% if pseudoHasError %}
+                        <div>
+                            {{ form_errors(registrationForm.pseudo) }}
+                        </div>
+                    {% endif %}
+                </div>
+ 
+                <!-- email -->
+                <div class="">
+                    {% set emailHasError = registrationForm.email.vars.errors|length > 0 %}
+                    {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'form_label'}}) }}
+                    {{ form_widget(registrationForm.email, {'attr': {
+                        'class' : emailHasError ? 'form-input-error' : 'form-input',
+                        'placeholder' : "votre@email.com"
+                    }}) }}
+                    {% if emailHasError %}
+                        <div>
+                            {{ form_errors(registrationForm.email) }}
+                        </div>
+                    {% endif %}
+                </div>
+ 
+                <!-- Mot de passe -->
+                <div class="">
+                    {% set passwordHasError = registrationForm.plainPassword.first.vars.errors|length > 0 %}
+                    {{ form_label(registrationForm.plainPassword.first, null, {'label_attr': {'class': 'form_label'}}) }}
+                    {{ form_widget(registrationForm.plainPassword.first, {'attr': {
+                        'class' : passwordHasError ? 'form-input-error' : 'form-input',
+                        'placeholder' : "Minimum 6 caractères"
+                    }}) }}
+                    {% if passwordHasError %}
+                        <div>
+                            {{ form_errors(registrationForm.plainPassword.first) }}
+                        </div>
+                    {% endif %}
+                </div>
+ 
+                <!-- Confirmation mot de passe -->
+                <div class="">
+                    {% set passwordConfirmHasError = registrationForm.plainPassword.second.vars.errors|length > 0 %}
+                    {{ form_label(registrationForm.plainPassword.second, null, {'label_attr': {'class': 'form_label'}}) }}
+                    {{ form_widget(registrationForm.plainPassword.second, {'attr': {
+                        'class' : passwordConfirmHasError ? 'form-input-error' : 'form-input',
+                        'placeholder' : "Répétez le mot de passe"
+                    }}) }}
+                    {% if passwordConfirmHasError %}
+                        <div>
+                            {{ form_errors(registrationForm.plainPassword.second) }}
+                        </div>
+                    {% endif %}
+                </div>
+ 
+                <!-- Condition d'utilisation -->
+                <div class="flex items-center">
+                    <div class="flex items-center h-5">
+                        {{ form_widget(registrationForm.agreeTerms, {'attr' : {
+                        'class' : 'h-4 w-4 border-standard rouded text-primary'
+                    }}) }}
+                    </div>
+ 
+                    <div class="ml-3 text-sm">
+                        {{ form_label(registrationForm.agreeTerms, null, {'attr' : {
+                        'class' : 'text-gray-700 cursor-pointer'
+                    }}) }}
+ 
+                        {% if registrationForm.agreeTerms.vars.errors|length > 0 %}
+                            <div class='mt-1 text-sm text-red-600'>
+                                {{ form_errors(registrationForm.agreeTerms) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+ 
+                <!-- boutton submit -->
+                <div>
+                    <button class="btn-primary-lg w-full" type="submit">Créer mon compte</button>
+                </div>
+ 
+                {{ form_end(registrationForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+ 
+ 
