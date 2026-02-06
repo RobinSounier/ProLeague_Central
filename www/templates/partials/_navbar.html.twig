@@ -79,12 +79,11 @@
 					{% if is_granted('ROLE_ADMIN') %}
 						<a class="block px-3 py-2 rounded-md text-base font-medium text-accent hover:text-accent/80 hover:bg-gray-50" href="">Dashboard</a>
 					{% endif %}
-					<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Déconnexion</a>
+					<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ path('app_logout') }}">Déconnexion</a>
 
 				{% else %}
-					<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">Connexion</a>
-					<a class="block px-3 py-2 rounded-md text-base font-medium text-white bg-primary hover:bg-primary/90" href="#">S'inscrire</a>
-
+					<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ path('app_login') }}">Connexion</a>
+					<a class="block px-3 py-2 rounded-md text-base font-medium text-white bg-primary hover:bg-primary/90" href="{{ path('app_register') }}">S'inscrire</a>
 				{% endif %}
 
 
