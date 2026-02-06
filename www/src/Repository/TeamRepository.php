@@ -40,4 +40,40 @@ class TeamRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+
+    public function findActive(int $id): ?Team
+    {
+        $qb = $this->createQueryBuilder('c')
+            // Charger les relations d'un coup (éviter N+1 queries)
+            ->leftJoin('c.team', 'cat')
+            ->leftJoin('c.user', 'u')
+            // Filtre : actif ET ID correct
+            ->where('c.isActive = :isActive')
+            ->andWhere('c.id = :id')
+            ->setParameter('isActive', true)
+            ->setParameter('id', $id);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+
+    public function findAllWithFilters(int $gameID = 0): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.game', 'cat')
+            ->where('c.isActive = :isActive')
+            ->setParameter('isActive', true)
+            ->groupBy('c.id');
+
+        //Filtre par categorie
+        if ($gameID > 0) {
+            $qb->andWhere('cat.id = :gameID')
+                ->setParameter('gameID', $gameID);
+        }
+
+        return $qb->getQuery()->getResult();
+
+
+    }
 }
