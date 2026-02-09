@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block body %}
+<div class="min-h-screen mb-8">
+    <div class="container-main pt-8">
+        
+        <div class="max-w-2xl mx-auto">
+            <div class="mb-6">
+                <a href="{{ path('app_profil_show') }}" class="link-nav">
+                    ← Retour à mon profil
+                </a>
+            </div>
+
+            <div class="card-padded">
+                <h1 class="text-3xl font-bold mb-6 text-gray-900">Modifier mes informations</h1>
+
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                    
+                    {# Champ Pseudo #}
+                    <div>
+                        {{ form_label(form.pseudo, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.pseudo, {'attr': {'class': 'w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50'}}) }}
+                        {{ form_errors(form.pseudo, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+                    </div>
+
+                    {# Champ Email #}
+                    <div>
+                        {{ form_label(form.email, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.email, {'attr': {'class': 'w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50'}}) }}
+                        {{ form_errors(form.email, {'attr': {'class': 'text-red-600 text-sm mt-1'}}) }}
+                    </div>
+
+                    {# --- CHAMP BIO --- #}
+                    <div>
+                        {{ form_label(form.bio, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.bio, {'attr': {'class': 'w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50'}}) }}
+                        <p class="text-xs text-gray-500 mt-1">Apparaîtra sur votre page de profil publique.</p>
+                        {{ form_errors(form.bio) }}
+                    </div>
+                    
+
+                    <div class="pt-4 flex justify-end gap-3">
+                        <a href="{{ path('app_profil_show') }}" class="btn-secondary">Annuler</a>
+                        <button type="submit" class="btn-primary">
+                            Enregistrer
+                        </button>
+                    </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
