@@ -85,12 +85,26 @@ final class TeamController extends AbstractController
     #[Route('/{id}', name: 'app_team_delete', methods: ['POST'])]
     public function delete(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$team->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($team);
-            $entityManager->flush();
+        //on vérifie que le owner est l'user en session
+        if ($team->getOwner() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Vous avez pas l\'autorisation de supprimer cette equipe');
+            return $this->redirectToRoute('app_team_index', [], Response::HTTP_SEE_OTHER);
         }
+
+        //vérifie le token
+        $token = $request->query->get('_token');
+        if ($this->isCsrfTokenValid('delete_team_'.$team->getId(), $token)) {
+            $this->addFlash('error', 'CSRF Token invalid');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        $team->setIsActive(false);
+        $team->setUpdatedAt(new \DateTime());
+
+        $entityManager->flush();
+
+        $this->addFlash('success', "Votre équipe a été supprimer avec succes.");
 
         return $this->redirectToRoute('app_team_index', [], Response::HTTP_SEE_OTHER);
     }
 }
- 
