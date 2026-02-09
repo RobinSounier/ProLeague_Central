@@ -24,8 +24,8 @@
 						{# ---BOUTON REJOINDRE --- #}
 						<div class="mt-6">
 							{% if app.user %}
-								
-                                {% if team.users.contains(app.user) %}
+
+								{% if team.users.contains(app.user) %}
 									{# CAS 1 : L'utilisateur est membre #}
 
 									{% if team.owner == app.user %}
@@ -123,9 +123,13 @@
 						<ul class="space-y-2">
 							{% for user in team.users|slice(0, 10) %}
 								<li class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
-									<div class="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center mr-3 text-sm flex-shrink-0">
-										{{ user.pseudo|first|upper }}
-									</div>
+									{% if user.getAvatar() !== null %}
+										<img src="{{ user.avatar }}" alt="{{ user.pseudo }}" class="w-10 h-10 rounded-full flex items-center justify-center mr-3">
+									{% else %}
+										<div class="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center mr-3 text-sm flex-shrink-0">
+											{{ user.pseudo|first|upper }}
+										</div>
+									{% endif %}
 									<span class="text-gray-700 font-medium">{{ user.pseudo }}</span>
 								</li>
 							{% endfor %}
