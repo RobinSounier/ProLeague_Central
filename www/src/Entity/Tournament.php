@@ -68,6 +68,10 @@ class Tournament
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'tournament')]
     private Collection $comments;
 
+    #[ORM\ManyToOne(inversedBy: 'ownerTournaments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
@@ -296,6 +300,18 @@ class Tournament
                 $comment->setTournament(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }
