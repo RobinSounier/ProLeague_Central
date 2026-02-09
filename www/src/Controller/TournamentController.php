@@ -21,24 +21,8 @@ final class TournamentController extends AbstractController
     #[Route(name: 'app_tournament_index', methods: ['GET'])]
     public function index(TournamentRepository $tournamentRepository, GameRepository $gameRepository, Request $request): Response
     {
-        $gameTeams = 0; // Valeur par défaut
-
-        // Vérifier si l'utilisateur est connecté
-        if ($this->getUser()) {
-            // Récupération du jeu favori de la team de l'user pour le filtrer
-            $userTeams = $this->getUser()->getTeams();
-
-            if (!$userTeams->isEmpty()) {
-                // Prendre la première équipe (ou adapter selon votre logique)
-                $team = $userTeams->first();
-                $gameTeams = $team->getGame()->getId();
-            }
-        }
-
-        $gamesId = $request->query->has('game')
-            ? $request->query->getInt('game', 0)
-            : $gameTeams;
-
+        // Récupération des paramètres de filtre et tri
+        $gamesId = $request->query->getInt('game', 0);
         $sortBy = $request->query->get('sort', 'recent');
 
         // Récupération de tous les jeux
