@@ -25,10 +25,8 @@ final class TeamController extends AbstractController
         //récuperation de toute les catégories pour pouvoir les afficher
         $games = $gameRepository->findAll();
 
-        $teams = $teamRepository->findAll();
-
         //récuperation des challenge avec possiblité de filtre
-        $challenges = $teamRepository->findAllWithFilters($gamesId);
+        $teams = $teamRepository->findAllWithFilters($gamesId);
 
 
         return $this->render('team/index.html.twig', [
