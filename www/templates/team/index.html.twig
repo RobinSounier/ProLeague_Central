@@ -24,7 +24,7 @@
                             <option value="0" {{ selectGames == 0 ? 'selected' : '' }}>Toutes les jeux</option>
                             {% for game in games %}
                                 <option
-                                    value="{{ game.id }}" {{ selectGames == game.id ? 'selcted' : '' }}> {{ game.label }}</option>
+                                    value="{{ game.id }}" {{ selectGames == game.id ? 'selected' : '' }}> {{ game.label }}</option>
                             {% endfor %}
                         </select>
                     </div>
