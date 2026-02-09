@@ -21,7 +21,6 @@
 						<p class="text-gray-600 text-lg leading-relaxed max-w-2xl">{{ team.description }}</p>
 					</div>
 					<div class="flex gap-3 flex-shrink-0 ml-6">
-						<a href="{{ path('app_team_edit', {'id': team.id}) }}" class="btn-primary">Éditer</a>
 						{{ include('team/_delete_form.html.twig') }}
 					</div>
 				</div>
