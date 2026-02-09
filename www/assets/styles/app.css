@@ -303,37 +303,30 @@ h6 {
         @apply w-4 h-4 mr-2;
     }
 
-    /* --- VOTE --- */
-    .vote-container {
-        @apply flex flex-col items-center justify-center;
-    }
-
     .vote-button {
-        @apply flex flex-col items-center justify-center p-4 rounded-xl border border-gray-200 bg-white transition-all duration-200 cursor-pointer;
-        min-width: 100px;
+        @apply w-10 h-10 flex items-center justify-center
+        rounded-full
+        border border-gray-300
+        bg-white
+        transition-all duration-200
+        hover:scale-105 hover:border-red-400
+        ml-4;
     }
 
-    .vote-button:hover:not(:disabled) {
-        @apply border-primary-light bg-primary-lighter -translate-y-[2px];
+    /* Icône */
+    .icon-like {
+        @apply w-6 h-6 text-gray-400 transition-colors duration-200;
     }
 
+    /* État liké */
     .vote-button.voted {
-        @apply bg-primary-lighter border-primary text-primary;
+        @apply border-red-500 bg-red-50;
     }
 
-    /* Utilisation de la police Outfit directement */
-    .vote-count {
-        @apply text-2xl font-bold text-gray-800 mb-1;
-        font-family: 'Outfit', sans-serif;
+    .vote-button.voted .icon-like {
+        @apply text-red-500;
     }
 
-    .vote-button.voted .vote-count {
-        @apply text-primary;
-    }
-
-    .vote-text {
-        @apply text-xs font-medium text-gray-500 uppercase tracking-wide;
-    }
 
 }
 

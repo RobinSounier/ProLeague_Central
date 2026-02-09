@@ -25,7 +25,8 @@
                         <div class="grid grid-cols-2 gap-4">
                             {% for media in tournament.medias %}
                                 <div class="relative group">
-                                    <img src="{{ media.path }}" alt="Média {{ loop.index }}" class="w-full h-48 object-cover rounded-lg border border-gray-200">
+                                    <img src="{{ media.path }}" alt="Média {{ loop.index }}"
+                                         class="w-full h-48 object-cover rounded-lg border border-gray-200">
                                 </div>
                             {% endfor %}
                         </div>
@@ -77,74 +78,82 @@
                             </div>
                             <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ tournament.title }}</h1>
                             <div class="flex items-center text-gray-600 mb-4">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
                                 <p class="text-sm">Créé le {{ tournament.createdAt|date('d/m/Y à H:i') }}</p>
                             </div>
                         </div>
 
-                        {# Bouton de vote #}
                         <div class="vote-container">
                             {% if app.user %}
-                                <button class="vote-button {{ hasVoted ? 'voted' : '' }}" id="vote-button"
-                                        data-tournament-id="{{ tournament.id }}"
-                                        data-has-voted="{{ hasVoted ? 'true' : 'false' }}">
-                                    <svg class="vote-icon" fill="none" stroke="currentColor" viewbox="0 0 24 24"
-                                         stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                <button
+                                    class="vote-button {{ hasVoted ? 'voted' : '' }}"
+                                    id="vote-button"
+                                    data-tournament-id="{{ tournament.id }}"
+                                    data-has-voted="{{ hasVoted ? 'true' : 'false' }}"
+                                    aria-label="Like">
+
+                                    <svg
+                                        class="icon-like"
+                                        fill="{{ hasVoted ? 'currentColor' : 'none' }}"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="2">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                     </svg>
-                                    <span id="vote-count" class="vote-count">{{ voteCount }}</span>
-                                    <span class="vote-text">{{ hasVoted ? 'Retirer' : 'Voter' }}</span>
+
                                 </button>
                             {% else %}
-                                <div class="vote-disabled">
-                                    <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewbox="0 0 24 24"
-                                         stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                {# Style simplifié pour les non-connectés #}
+                                <div class="text-center opacity-50">
+                                    <span class="block text-2xl font-bold text-gray-400">{{ voteCount }}</span>
+                                    <svg class="w-6 h-6 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                     </svg>
-                                    <span id="vote-count" class="vote-count">{{ voteCount }}</span>
-                                    <span class="vote-text">vote{{ voteCount > 1 ? 's' : '' }}</span>
-                                    <a href="{{ path('app_login') }}" class="link-nav text-xs font-medium">Connectez-vous</a>
                                 </div>
                             {% endif %}
                         </div>
                     </div>
 
-                    <!-- Description -->
                     <div class="prose max-w-none mb-6">
                         <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ tournament.description }}</p>
                     </div>
 
-                    <!-- Lien externe -->
                     {% if tournament.link %}
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                                     </svg>
                                     <p class="font-medium text-blue-900">Lien du tournoi</p>
                                 </div>
                                 <a href="{{ tournament.link }}" target="_blank" rel="noopener noreferrer"
-                                   class="btn-primary flex items-center space-x-2">
+                                   class="btn-secondary-transparent flex items-center space-x-2 text-accent">
                                     <span>Accéder</span>
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                     </svg>
                                 </a>
                             </div>
                         </div>
                     {% endif %}
 
-                    <!-- Deadlines -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         {% if tournament.deadlineJoin %}
                             <div class="alert-warning">
                                 <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2">
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor"
+                                         viewbox="0 0 24 24" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                               d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                                     </svg>
@@ -158,21 +167,20 @@
                         {% if tournament.deadline %}
                             <div class="alert-warning">
                                 <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-alert" fill="none" stroke="currentColor"
+                                    <svg class="w-5 h-5 mr-2 text-accent" fill="none" stroke="currentColor"
                                          viewbox="0 0 24 24" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     <div>
-                                        <p class="font-medium text-alert-border">Fin du tournoi</p>
-                                        <p class="text-sm text-alert-border">{{ tournament.deadline|date('d/m/Y à H:i') }}</p>
+                                        <p class="font-medium text-accent">Fin du tournoi</p>
+                                        <p class="text-sm text-accent">{{ tournament.deadline|date('d/m/Y à H:i') }}</p>
                                     </div>
                                 </div>
                             </div>
                         {% endif %}
                     </div>
 
-                    <!-- Statistiques -->
                     <div class="flex items-center space-x-6 pt-6 border-t border-gray-200">
                         <div class="vote-stats">
                             <svg fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2">
@@ -220,8 +228,10 @@
                     </div>
                     {{ form_rest(commentForm) }}
                     <button type="submit" class="btn-primary-lg flex items-center space-x-2">
-                        <svg class="icon-with-text" fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        <svg class="icon-with-text" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                             stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
                         <span>Publier le commentaire</span>
                     </button>
@@ -231,14 +241,15 @@
                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8 text-center">
                     <p class="text-gray-600 mb-4">Connectez-vous pour laisser un commentaire</p>
                     <a href="{{ path('app_login') }}" class="btn-primary-lg inline-flex items-center space-x-2">
-                        <svg class="icon-with-text" fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        <svg class="icon-with-text" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                             stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                         </svg>
                         <span>Se connecter</span>
                     </a>
                 </div>
             {% endif %}
-
             <!-- Liste des commentaires -->
             <div class="space-y-6">
                 {% if comments|length > 0 %}
@@ -251,8 +262,10 @@
                     {% endfor %}
                 {% else %}
                     <div class="text-center py-12 text-gray-500">
-                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor"
+                             viewbox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
                         <p>Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
                     </div>
@@ -269,12 +282,17 @@
 
         voteButton.addEventListener('click', function() {
         const button = this;
-        button.disabled = true;
-
         const tournamentId = button.dataset.tournamentId;
         const hasVoted = button.dataset.hasVoted === 'true';
-        const url = '{{ path('app_tournament_vote', {id: '__ID__'}) }}'.replace('__ID__', tournamentId);
+
+        // URLs générées dynamiquement selon tes nouvelles routes
+        const urlAdd = "{{ path('app_tournament_vote_add', {id: tournament.id}) }}";
+                const urlDelete = "{{ path('app_tournament_vote_delete', {id: tournament.id}) }}";
+
+                const url = hasVoted ? urlDelete : urlAdd;
                 const method = hasVoted ? 'DELETE' : 'POST';
+
+                button.disabled = true;
 
                 fetch(url, {
                     method: method,
@@ -283,56 +301,38 @@
                         'Content-Type': 'application/json'
                     }
                 })
-                .then(response => {
-                    return response.json().then(data => {
-                        if (!response.ok || !data.success) {
-                            throw new Error(data.message || "Une erreur est survenue lors du vote");
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        throw new Error(data.message);
+                    }
+
+                    // Mise à jour de l'état local du bouton
+                    const newHasVoted = !hasVoted;
+                    button.dataset.hasVoted = newHasVoted.toString();
+
+                    // Mise à jour visuelle (Classes et Textes)
+                    button.classList.toggle('voted', newHasVoted);
+
+
+                    // Mise à jour des compteurs (Bouton + Barre de stats)
+                    const countElements = [
+                        document.getElementById('vote-count'),
+                        document.getElementById('stats-vote-count')
+                    ];
+
+                    countElements.forEach(el => {
+                        if (el) {
+                            if (el.id === 'stats-vote-count') {
+                                el.textContent = `${data.voteCount} vote${data.voteCount > 1 ? 's' : ''}`;
+                            } else {
+                                el.textContent = data.voteCount;
+                            }
                         }
-                        return data;
                     });
                 })
-                .then(data => {
-                    // Mettre à jour le compteur de votes
-                    const voteCountElement = document.getElementById('vote-count');
-                    if (voteCountElement) {
-                        voteCountElement.textContent = data.voteCount;
-                    }
-
-                    const statsVoteCount = document.getElementById('stats-vote-count');
-                    if (statsVoteCount) {
-                        statsVoteCount.textContent = data.voteCount + ' vote' + (data.voteCount > 1 ? 's' : '');
-                    }
-
-                    // Mettre à jour l'état du bouton
-                    const newHasVoted = !hasVoted;
-                    button.dataset.hasVoted = newHasVoted ? 'true' : 'false';
-
-                    // Toggle la classe 'voted'
-                    if (newHasVoted) {
-                        button.classList.add('voted');
-                    } else {
-                        button.classList.remove('voted');
-                    }
-
-                    // Mettre à jour le texte du bouton
-                    const textSpan = button.querySelector('.vote-text');
-                    if (textSpan) {
-                        textSpan.textContent = newHasVoted ? 'Retirer' : 'Voter';
-                    }
-
-                    // Mettre à jour l'icône (fill)
-                    const icon = button.querySelector('.vote-icon');
-                    if (icon) {
-                        if (newHasVoted) {
-                            icon.setAttribute('fill', 'currentColor');
-                        } else {
-                            icon.setAttribute('fill', 'none');
-                        }
-                    }
-                })
                 .catch(error => {
-                    console.error('Erreur:', error);
-                    alert(error.message || "Une erreur est survenue lors du vote");
+                    alert(error.message || "Une erreur est survenue");
                 })
                 .finally(() => {
                     button.disabled = false;
