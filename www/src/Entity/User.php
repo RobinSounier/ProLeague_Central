@@ -73,11 +73,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, Team>
+     */
+    #[ORM\OneToMany(targetEntity: Team::class, mappedBy: 'owner')]
+    private Collection $ownerTeams;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
         $this->votes = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->ownerTeams = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -308,6 +315,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($comment->getAuthor() === $this) {
                 $comment->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Team>
+     */
+    public function getOwnerTeams(): Collection
+    {
+        return $this->ownerTeams;
+    }
+
+    public function addOwnerTeam(Team $ownerTeam): static
+    {
+        if (!$this->ownerTeams->contains($ownerTeam)) {
+            $this->ownerTeams->add($ownerTeam);
+            $ownerTeam->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnerTeam(Team $ownerTeam): static
+    {
+        if ($this->ownerTeams->removeElement($ownerTeam)) {
+            // set the owning side to null (unless already changed)
+            if ($ownerTeam->getOwner() === $this) {
+                $ownerTeam->setOwner(null);
             }
         }
 

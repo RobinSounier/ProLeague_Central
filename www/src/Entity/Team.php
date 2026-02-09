@@ -47,6 +47,9 @@ class Team
     #[ORM\JoinColumn(nullable: false)]
     private ?Game $game = null;
 
+    #[ORM\ManyToOne(inversedBy: 'ownerTeams')]
+    private ?User $owner = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -174,6 +177,18 @@ class Team
     public function setGame(?Game $game): static
     {
         $this->game = $game;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }
