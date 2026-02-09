@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Team;
 use App\Form\TeamType;
+use App\Repository\GameRepository;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,8 +20,21 @@ class TeamController extends AbstractController
     #[Route('/', name: 'app_team_index', methods: ['GET'])]
     public function index(TeamRepository $teamRepository): Response
     {
+
+        // recupération des paramètrre de tri et de filtre soumis par l'utilisateur
+        $gamesId = $request->query->getInt('game', 0);
+
+        //récuperation de toute les catégories pour pouvoir les afficher
+        $games = $gameRepository->findAll();
+
+        //récuperation des challenge avec possiblité de filtre
+        $teams = $teamRepository->findAllWithFilters($gamesId);
+
+
         return $this->render('team/index.html.twig', [
-            'teams' => $teamRepository->findAll(),
+            'teams' => $teams,
+            'selectGames' => $gamesId,
+            'games' => $games,
         ]);
     }
 
