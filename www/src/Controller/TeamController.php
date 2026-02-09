@@ -85,26 +85,10 @@ final class TeamController extends AbstractController
     #[Route('/{id}', name: 'app_team_delete', methods: ['POST'])]
     public function delete(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {
-        // vérifier que le user est bine l'auteur du défie
-        if ($team->getOwner() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('error', "Vous n'avez pas l'autaurisation de supprimer ce challenge.");
-            return $this->redirectToRoute('app_challenge_show', ['id' => $team->getId()]);
+        if ($this->isCsrfTokenValid('delete'.$team->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($team);
+            $entityManager->flush();
         }
-
-        //verifie le token
-        $token = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('delete_challenge_'.$team->getId(), $token)) {
-            $this->addFlash('error', "Token Csrf Invalid.");
-            return $this->redirectToRoute('app_challenge_show', ['id' => $team->getId()]);
-        }
-
-        //soft delete
-        $challenge->setIsActive(false);
-        $challenge->setUpdatedAt(new DateTime());
-
-        $entityManager->flush();
-
-        $this->addFlash('succes', "Votre défis a été supprimer avec succes.");
 
         return $this->redirectToRoute('app_team_index', [], Response::HTTP_SEE_OTHER);
     }
