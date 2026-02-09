@@ -1,144 +1,186 @@
 {% extends 'base.html.twig' %}
 {% block title %}
-    {{ team.name }}
+	{{ team.name }}
 {% endblock %}
 {% block body %}
-    <div class="min-h-screen mb-8">
-        <div class="container-main">
-            <!-- Back Button -->
-            <div class="pt-8 pb-6">
-                <a href="{{ path('app_team_index') }}" class="link-nav">
-                    ⏎ Retour à la liste
-                </a>
-            </div>
+	<div class="min-h-screen mb-8">
+		<div
+			class="container-main">
+            			
+			<!-- Back Button -->
+			<div class="pt-8 pb-6">
+				<a href="{{ path('app_team_index') }}" class="link-nav">
+					⏎ Retour à la liste
+				</a>
+			</div>
+            {% include "partials/_messages.html.twig" %}
 
-            <!-- Header Section -->
-            <div class="card-padded mb-8">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="flex-1">
-                        <h1 class="text-4xl font-bold mb-3">{{ team.name }}</h1>
-                        <p class="text-gray-600 text-lg leading-relaxed max-w-2xl">{{ team.description }}</p>
-                    </div>
-                    {% if app.user and (is_granted('ROLE_ADMIN') or team.owner == app.user) %}
-                        <div class="flex gap-2">
-                            <a class="btn-primary"
-                               href="{{ path('app_team_edit', {id: team.id}) }}">
-                                <svg class="icon-with-text" fill="none" stroke="currentColor"
-                                     viewbox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                                <span>Éditer</span>
-                            </a>
-                            <button type="button" class="btn-primary bg-red-600 hover:bg-red-700" onclick="openDeleteModal()">
-                                <svg class="icon-with-text" fill="none" stroke="currentColor"
-                                     viewbox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                                <span>Supprimer</span>
-                            </button>
-                        </div>
-                    {% endif %}
-                </div>
+			<!-- Header Section -->
+			<div class="card-padded mb-8">
+				<div class="flex items-start justify-between mb-6">
+					<div class="flex-1">
+						<h1 class="text-4xl font-bold mb-3">{{ team.name }}</h1>
+						<p class="text-gray-600 text-lg leading-relaxed max-w-2xl">{{ team.description }}</p>
+						{# ---BOUTON REJOINDRE --- #}
+						<div class="mt-6">
+							{% if app.user %}
+								{% if team.users.contains(app.user) %}
+									{# Déjà membre #}
+									<button disabled class="px-6 py-2 rounded-lg bg-gray-100 text-gray-500 font-medium cursor-not-allowed flex items-center gap-2">
+										<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+										</svg>
+										Déjà membre
+									</button>
 
-                <!-- Metadata Row -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-200">
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Créée le</p>
-                        <p class="text-lg font-bold text-gray-900">{{ team.createdAt|date('d/m/Y') }}</p>
-                        <p class="text-sm text-gray-500">à {{ team.createdAt|date('H:i') }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Jeu favori</p>
-                        <p class="text-lg font-bold text-gray-900">{{ team.game.label }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nombre de membres</p>
-                        <p class="text-lg font-bold text-primary">{{ team.users|length }}</p>
-                    </div>
-                </div>
-            </div>
+								{% elseif team.users|length >= 15 %}
+									{#  Équipe complète #}
+									<button disabled class="px-6 py-2 rounded-lg bg-red-50 text-red-600 border border-red-100 font-bold cursor-not-allowed">
+										Équipe complète (15/15)
+									</button>
 
-            <!-- Members & Tournaments Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Members List -->
-                <div class="card-padded">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-900">Membres</h2>
+								{% else %}
+									{# Peut rejoindre  #}
+									<form
+										action="{{ path('app_team_join', {'id': team.id}) }}" method="post">
+										{# Token de sécurité invisible #}
+										<input type="hidden" name="_token" value="{{ csrf_token('join' ~ team.id) }}">
 
-                    {% if team.users|length > 0 %}
-                        <ul class="space-y-2">
-                            {% for user in team.users|slice(0, 10) %}
-                                <li class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div class="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center mr-3 text-sm flex-shrink-0">
-                                        {{ user.pseudo|first|upper }}
-                                    </div>
-                                    <span class="text-gray-700 font-medium">{{ user.pseudo }}</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                        {% if team.users|length > 10 %}
-                            <p class="text-sm text-gray-500 mt-4 pt-4 border-t border-gray-200">
-                                +{{ team.users|length - 10 }} autre(s) membre(s)
-                            </p>
-                        {% endif %}
-                    {% else %}
-                        <p class="text-gray-500 text-center py-8">Aucun membre pour le moment</p>
-                    {% endif %}
-                </div>
+										<button type="submit" class="btn-primary inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors ">
+											<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+											</svg>
+											Rejoindre l'équipe
+										</button>
+									</form>
+								{% endif %}
+							{% else %}
+								{# Non connecté #}
+								<a href="{{ path('app_login') }}" class="inline-block text-primary hover:text-primary-dark underline font-medium mt-2">
+									Connectez-vous pour rejoindre cette équipe
+								</a>
+							{% endif %}
+						</div>
+					</div>
 
-                <!-- Tournaments Section -->
-                <div class="card-padded">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-900">Tournois</h2>
+					{% if app.user and (is_granted('ROLE_ADMIN') or team.owner == app.user) %}
+						<div class="flex gap-2">
+							<a class="btn-primary" href="{{ path('app_team_edit', {id: team.id}) }}">
+								<svg class="icon-with-text" fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+								</svg>
+								<span>Éditer</span>
+							</a>
+							<button type="button" class="btn-primary bg-red-600 hover:bg-red-700" onclick="openDeleteModal()">
+								<svg class="icon-with-text" fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+								</svg>
+								<span>Supprimer</span>
+							</button>
+						</div>
+					{% endif %}
+				</div>
 
-                    {% if team.tournaments|length > 0 %}
-                        <ul class="space-y-3">
-                            {% for tournament in team.tournaments %}
-                                <li class="flex items-center p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary-lighter transition-all">
+				<!-- Metadata Row -->
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-200">
+					<div>
+						<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Créée le</p>
+						<p class="text-lg font-bold text-gray-900">{{ team.createdAt|date('d/m/Y') }}</p>
+						<p class="text-sm text-gray-500">à
+							{{ team.createdAt|date('H:i') }}</p>
+					</div>
+					<div>
+						<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Jeu favori</p>
+						<p class="text-lg font-bold text-gray-900">{{ team.game.label }}</p>
+					</div>
+					<div>
+						<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Nombre de membres</p>
+						<p class="text-lg font-bold text-primary">{{ team.users|length }}</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Members & Tournaments Section -->
+			<div
+				class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+				<!-- Members List -->
+				<div class="card-padded">
+					<h2 class="text-2xl font-bold mb-6 text-gray-900">Membres</h2>
+
+					{% if team.users|length > 0 %}
+						<ul class="space-y-2">
+							{% for user in team.users|slice(0, 10) %}
+								<li class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors">
+									<div class="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center mr-3 text-sm flex-shrink-0">
+										{{ user.pseudo|first|upper }}
+									</div>
+									<span class="text-gray-700 font-medium">{{ user.pseudo }}</span>
+								</li>
+							{% endfor %}
+						</ul>
+						{% if team.users|length > 10 %}
+							<p class="text-sm text-gray-500 mt-4 pt-4 border-t border-gray-200">
+								+{{ team.users|length - 10 }}
+								autre(s) membre(s)
+							</p>
+						{% endif %}
+					{% else %}
+						<p class="text-gray-500 text-center py-8">Aucun membre pour le moment</p>
+					{% endif %}
+				</div>
+
+				<!-- Tournaments Section -->
+				<div class="card-padded">
+					<h2 class="text-2xl font-bold mb-6 text-gray-900">Tournois</h2>
+
+					{% if team.tournaments|length > 0 %}
+						<ul class="space-y-3">
+							{% for tournament in team.tournaments %}
+								<li class="flex items-center p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary-lighter transition-all">
 									<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-xs font-bold mr-3 flex-shrink-0">
 										{{ loop.index }}
 									</span>
-                                    <span class="text-gray-700 font-medium">{{ tournament.getTitle() }}</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="text-gray-500 text-center py-8">Aucun tournoi associé</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
+									<span class="text-gray-700 font-medium">{{ tournament.getTitle() }}</span>
+								</li>
+							{% endfor %}
+						</ul>
+					{% else %}
+						<p class="text-gray-500 text-center py-8">Aucun tournoi associé</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <!-- Modal de confirmation (en dehors du container principal) -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 class="text-xl font-bold mb-4">Confirmer la suppression</h3>
-            <p class="text-gray-600 mb-6">Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.</p>
-            <div class="flex gap-3 justify-end">
-                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
-                <form action="{{ path('app_team_delete', {id: team.id}) }}" method="post" class="inline">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete_team_' ~ team.id) }}">
-                    <button type="submit" class="btn-danger">Supprimer</button>
-                </form>
-            </div>
-        </div>
-    </div>
+	<!-- Modal de confirmation (en dehors du container principal) -->
+	<div id="deleteModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+		<div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+			<h3 class="text-xl font-bold mb-4">Confirmer la suppression</h3>
+			<p class="text-gray-600 mb-6">Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.</p>
+			<div class="flex gap-3 justify-end">
+				<button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+				<form action="{{ path('app_team_delete', {id: team.id}) }}" method="post" class="inline">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete_team_' ~ team.id) }}">
+					<button type="submit" class="btn-danger">Supprimer</button>
+				</form>
+			</div>
+		</div>
+	</div>
 
-    <script>
-        function openDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
+	<script>
+		function openDeleteModal() {
+document.getElementById('deleteModal').classList.remove('hidden');
+}
 
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-        }
+function closeDeleteModal() {
+document.getElementById('deleteModal').classList.add('hidden');
+}
 
-        // Fermer la modal en cliquant en dehors
-        document.getElementById('deleteModal')?.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDeleteModal();
-            }
-        });
-    </script>
+// Fermer la modal en cliquant en dehors
+document.getElementById('deleteModal') ?. addEventListener('click', function (e) {
+if (e.target === this) {
+closeDeleteModal();
+}
+});
+	</script>
 {% endblock %}
