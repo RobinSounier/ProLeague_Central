@@ -99,6 +99,7 @@ final class TournamentController extends AbstractController
     public function show(int $id, TournamentRepository $tournamentRepository, VoteRepository $voteRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
         $tournament = $tournamentRepository->find($id);
+        $user = $this->getUser();
 
         if (!$tournament) {
             $this->addFlash('error', "Ce tournoi n'existe pas.");
@@ -140,12 +141,30 @@ final class TournamentController extends AbstractController
             return $b->getCreatedAt() <=> $a->getCreatedAt();
         });
 
+        $allTournaments = [];
+        if ($user) {
+            foreach ($user->getTeams() as $team) {
+                // getTournaments() est bien défini dans ton entité Team
+                foreach ($team->getTournaments() as $tournament) {
+                    $allTournaments[] = $tournament;
+                }
+            }
+        }
+
+
+// Optionnel : supprimer les doublons si une équipe est inscrite plusieurs fois
+// ou si l'utilisateur est dans deux teams du même tournoi
+        $allTournaments = array_unique($allTournaments, SORT_REGULAR);
+
+
+
         return $this->render('tournament/show.html.twig', [
             'tournament' => $tournament,
             'hasVoted' => $hasVoted,
             'voteCount' => $tournament->getVotes()->count(),
             'commentForm' => $commentForm,
             'comments' => $comments,
+            'userTournaments' => $allTournaments,
         ]);
     }
 
