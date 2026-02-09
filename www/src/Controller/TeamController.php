@@ -134,4 +134,68 @@ final class TeamController extends AbstractController
 
         return $this->redirectToRoute('app_team_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/join', name: 'app_team_join', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function join(Request $request, Team $team, EntityManagerInterface $entityManager): Response
+    {
+        // Verifier que l'utilisateur est connecte 
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // L'utilisateur est-il déjà dans l'équipe ?
+        if ($team->getUsers()->contains($user)) {
+            $this->addFlash('warning', 'Vous faites déjà partie de cette équipe !');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // Limite de 15 joueurs ---
+        if ($team->getUsers()->count() >= 15) {
+            $this->addFlash('danger', 'Désolé, cette équipe a atteint sa limite de 15 joueurs.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        //  Si tout est bon, on ajoute le joueur
+        $team->addUser($user);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Bienvenue ! Vous avez rejoint l\'équipe ' . $team->getName() . '.');
+
+        return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+    }
+
+    #[Route('/{id}/leave', name: 'app_team_leave', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function leave(Request $request, Team $team, EntityManagerInterface $entityManager): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // 1. Vérification CSRF (Sécurité)
+        if (!$this->isCsrfTokenValid('leave' . $team->getId(), $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Action invalide (Token CSRF).');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // 2. Vérification : Est-ce le propriétaire ? (Interdit de quitter sa propre team)
+        if ($team->getOwner() === $user) {
+            $this->addFlash('danger', 'Le propriétaire ne peut pas quitter son équipe. Vous devez la supprimer.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // 3. Vérification : Est-il membre ?
+        if (!$team->getUsers()->contains($user)) {
+            $this->addFlash('warning', 'Vous ne faites pas partie de cette équipe.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // 4. On retire l'utilisateur
+        $team->removeUser($user);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Vous avez quitté l\'équipe avec succès.');
+
+        return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+    }
+
 }

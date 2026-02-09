@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tournament{% endblock %}
+
+{% block body %}
+    <h1>Tournament</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ tournament.id }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ tournament.title }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ tournament.description }}</td>
+            </tr>
+            <tr>
+                <th>Deadline</th>
+                <td>{{ tournament.deadline ? tournament.deadline|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DeadlineJoin</th>
+                <td>{{ tournament.deadlineJoin ? tournament.deadlineJoin|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ tournament.createdAt ? tournament.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ tournament.updatedAt ? tournament.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>IsActive</th>
+                <td>{{ tournament.isActive ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Link</th>
+                <td>{{ tournament.link }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_tournament_index') }}">back to list</a>
+
+    <a href="{{ path('app_tournament_edit', {'id': tournament.id}) }}">edit</a>
+
+    {{ include('tournament/_delete_form.html.twig') }}
+{% endblock %}

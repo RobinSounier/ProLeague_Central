@@ -79,12 +79,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Team::class, mappedBy: 'owner')]
     private Collection $ownerTeams;
 
+    /**
+     * @var Collection<int, Tournament>
+     */
+    #[ORM\OneToMany(targetEntity: Tournament::class, mappedBy: 'owner')]
+    private Collection $ownerTournaments;
+
     public function __construct()
     {
         $this->teams = new ArrayCollection();
         $this->votes = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->ownerTeams = new ArrayCollection();
+        $this->ownerTournaments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -345,6 +352,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($ownerTeam->getOwner() === $this) {
                 $ownerTeam->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tournament>
+     */
+    public function getOwnerTournaments(): Collection
+    {
+        return $this->ownerTournaments;
+    }
+
+    public function addOwnerTournament(Tournament $ownerTournament): static
+    {
+        if (!$this->ownerTournaments->contains($ownerTournament)) {
+            $this->ownerTournaments->add($ownerTournament);
+            $ownerTournament->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOwnerTournament(Tournament $ownerTournament): static
+    {
+        if ($this->ownerTournaments->removeElement($ownerTournament)) {
+            // set the owning side to null (unless already changed)
+            if ($ownerTournament->getOwner() === $this) {
+                $ownerTournament->setOwner(null);
             }
         }
 

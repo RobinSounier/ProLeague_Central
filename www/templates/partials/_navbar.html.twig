@@ -14,10 +14,10 @@
 				<a class="link-nav" href="{{ path('app_home') }}">
 					Accueil
 				</a>
-				<a class="link-nav" href="#">
+				<a class="link-nav" href="{{ path('app_tournament_index') }}">
 					Tournois
 				</a>
-				<a class="link-nav" href="#">
+				<a class="link-nav" href="{{ path('app_team_index') }}">
 					Équipes
 				</a>
 				{% if app.user %}
@@ -67,7 +67,7 @@
 				<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ path('app_home') }}">
 					Accueil
 				</a>
-				<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="#">
+				<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ path('app_tournament_index') }}">
 					Tournois
 				</a>
 				<a class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" href="{{ path('app_team_index') }}">
