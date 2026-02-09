@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Media;
 use App\Entity\Tournament;
+use App\Form\CommentType;
 use App\Form\TournamentType;
 use App\Repository\GameRepository;
 use App\Repository\TournamentRepository;
+use App\Repository\VoteRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -93,10 +96,56 @@ final class TournamentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_tournament_show', methods: ['GET'])]
-    public function show(Tournament $tournament): Response
+    public function show(int $id, TournamentRepository $tournamentRepository, VoteRepository $voteRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
+        $tournament = $tournamentRepository->find($id);
+
+        if (!$tournament) {
+            $this->addFlash('error', "Ce tournoi n'existe pas.");
+            return $this->redirectToRoute('app_tournament_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        if ($this->isCsrfTokenValid('delete_tournament_'.$tournament->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($tournament);
+            $entityManager->flush();
+            $this->addFlash('success', 'Le tournoi a été supprimé avec succès.');
+        }
+
+        // Vérifier si le tournoi est actif
+        if (!$tournament->isActive()) {
+            $this->addFlash('error', "Ce tournoi n'est plus disponible.");
+            return $this->redirectToRoute('app_tournament_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        // Vérifier si l'utilisateur a déjà voté
+        $hasVoted = false;
+        if ($this->getUser()) {
+            $hasVoted = $voteRepository->findOneBy([
+                    'author' => $this->getUser(),  // Changé de 'user' à 'author'
+                    'tournament' => $tournament
+                ]) !== null;
+        }
+
+        // Formulaire de commentaire principal
+        $comment = new Comment();
+        $commentForm = $this->createForm(CommentType::class, $comment);
+
+        // Récupérer les commentaires principaux (sans parent)
+        $comments = $tournament->getComments()->filter(function (Comment $comment) {
+            return $comment->getParentComment() === null;
+        })->toArray();
+
+        // Trier les commentaires par date (plus récent en premier)
+        usort($comments, function (Comment $a, Comment $b) {
+            return $b->getCreatedAt() <=> $a->getCreatedAt();
+        });
+
         return $this->render('tournament/show.html.twig', [
             'tournament' => $tournament,
+            'hasVoted' => $hasVoted,
+            'voteCount' => $tournament->getVotes()->count(),
+            'commentForm' => $commentForm,
+            'comments' => $comments,
         ]);
     }
 
