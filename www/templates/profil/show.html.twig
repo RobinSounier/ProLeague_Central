@@ -101,18 +101,6 @@
 						</div>
 					</div>
 
-					{% if app.user.bio %}
-						<div>
-							<p class="text-sm font-semibold text-gray-700 mb-2">Biographie</p>
-							<p class="text-gray-900 whitespace-pre-wrap">{{ app.user.bio }}</p>
-						</div>
-					{% else %}
-						<div class="bg-gray-50 rounded-lg p-4 border border-dashed border-gray-300">
-							<p class="text-gray-600 text-sm">Aucune biographie définie.
-								<a href="{{ path('app_profile_edit') }}" class="link-nav font-medium">Ajouter une biographie</a>
-							</p>
-						</div>
-					{% endif %}
 				</div>
 
 				{# Statistiques #}
