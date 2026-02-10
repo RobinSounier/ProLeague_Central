@@ -170,6 +170,36 @@ final class TeamController extends AbstractController
         return $this->redirectToRoute('app_tournament_show', ['id' => $tournament->getId()]);
     }
 
+
+    #[Route('/{id}/join', name: 'app_team_join', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function join(Request $request, Team $team, EntityManagerInterface $entityManager): Response
+    {
+        // Verifier que l'utilisateur est connecte
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // L'utilisateur est-il déjà dans l'équipe ?
+        if ($team->getUsers()->contains($user)) {
+            $this->addFlash('warning', 'Vous faites déjà partie de cette équipe !');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // Limite de 15 joueurs ---
+        if ($team->getUsers()->count() >= 15) {
+            $this->addFlash('danger', 'Désolé, cette équipe a atteint sa limite de 15 joueurs.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        //  Si tout est bon, on ajoute le joueur
+        $team->addUser($user);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Bienvenue ! Vous avez rejoint l\'équipe ' . $team->getName() . '.');
+
+        return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+    }
+
     #[Route('/{id}/leave', name: 'app_team_leave', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function leave(Request $request, Team $team, EntityManagerInterface $entityManager): Response
