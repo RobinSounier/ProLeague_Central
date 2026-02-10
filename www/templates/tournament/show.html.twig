@@ -10,7 +10,7 @@
             {% include "partials/_messages.html.twig" %}
 
             {# Bouton retour #}
-            <a class="link-nav inline-flex items-center mb-6" href="{{ path('app_tournament_index') }}">
+            <a class="link-nav inline-flex items-center mb-10" href="{{ path('app_tournament_index') }}">
                 <svg class="icon-sm mr-2" fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
                 </svg>
@@ -18,7 +18,7 @@
             </a>
 
             {# Carte principale du tournoi #}
-            <div class="card overflow-hidden mb-8">
+            <div class="card overflow-hidden mb-10">
                 {# Image #}
                 {% if tournament.medias|length > 0 %}
                     <div class="p-4">
@@ -33,22 +33,29 @@
                     </div>
                 {% else %}
                     <div class="w-full h-96 gradient-placeholder flex items-center justify-center">
-                        <svg class="w-24 h-24 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        <svg class="w-16 h-16" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                             viewBox="0 0 24 24">
+                            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                               stroke-width="2">
+                                <path
+                                    d="M15 8h.01M3 6a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z"/>
+                                <path d="m3 16l5-5c.928-.893 2.072-.893 3 0l5 5"/>
+                                <path d="m14 14l1-1c.928-.893 2.072-.893 3 0l3 3"/>
+                            </g>
                         </svg>
+
                     </div>
                 {% endif %}
 
                 <div class="p-8">
                     {# En-tête #}
-                    <div class="flex items-start justify-between mb-6">
+                    <div class="flex items-start justify-between mb-_">
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-4">
                                 <span class="badge-category">
                                     {{ tournament.game.label }}
                                 </span>
-                                {% if app.user and is_granted('ROLE_ADMIN') %}
+                                {% if app.user == tournament.owner or is_granted('ROLE_ADMIN') %}
                                     <div class="flex gap-2">
                                         <a class="btn-secondary flex items-center space-x-2"
                                            href="{{ path('app_tournament_edit', {id: tournament.id}) }}">
@@ -105,7 +112,7 @@
                                         <path
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
-                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                     </svg>
 
                                 </button>
@@ -113,37 +120,30 @@
                                 {# Style simplifié pour les non-connectés #}
                                 <div class="text-center opacity-50">
                                     <span class="block text-2xl font-bold text-gray-400">{{ voteCount }}</span>
-                                    <svg class="w-6 h-6 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    <svg class="w-6 h-6 mx-auto text-gray-300" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path
+                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                     </svg>
                                 </div>
                             {% endif %}
                         </div>
                     </div>
 
-                    <div class="prose max-w-none mb-6">
+                    <div class="prose max-w-none mb-10">
                         <p class="text-gray-700 leading-relaxed whitespace-pre-line">{{ tournament.description }}</p>
                     </div>
 
-                    {# 1. On initialise une variable à false #}
-                    {% set isUserInTournament = false %}
-
-                    {# 2. On parcourt les équipes de l'utilisateur en session #}
-                    {% if app.user %}
-                        {% for team in app.user.teams %}
-                            {% if tournament in team.tournaments %}
-                                {% set isUserInTournament = true %}
-                            {% endif %}
-                        {% endfor %}
-                    {% endif %}
 
                     {# 3. Affichage conditionnel : le lien ET (l'appartenance à l'équipe OU admin) #}
-                    {% if tournament.link and (isUserInTournament or is_granted('APP_ADMIN')) %}
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    {% if tournament.link and (isRegistered or is_granted('APP_ADMIN')) %}
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-10">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                                     </svg>
                                     <p class="font-medium text-blue-900">Lien du tournoi (Réservé aux participants)</p>
                                 </div>
@@ -151,14 +151,28 @@
                                    class="btn-secondary-transparent flex items-center space-x-2 text-accent">
                                     <span>Accéder au salon</span>
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                     </svg>
                                 </a>
                             </div>
                         </div>
+                    {% else %}
+                        <div class="bg-gray-50 border border-red-200 rounded-lg p-4 mb-10">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                    </svg>
+                                    <p class="font-medium text-gray-600">Inscrivez vous pour accédez au lien</p>
+                                </div>
+                            </div>
+                        </div>
                     {% endif %}
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
                         {% if tournament.deadlineJoin %}
                             <div class="alert-warning">
                                 <div class="flex items-center">
@@ -214,12 +228,98 @@
                             <span>{{ tournament.comments|length }} commentaire{{ tournament.comments|length > 1 ? 's' : '' }}</span>
                         </div>
                     </div>
+                    <div class="card-padded shadow-sm border border-gray-100 rounded-xl bg-white overflow-hidden mt-10">
+                        <div class="p-5 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                            <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                <span class="w-2 h-6 bg-primary rounded-full"></span>
+                                Équipes inscrites
+                            </h2>
+                            <span class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                {{ allTeamsRegistred|length }} Équipes
+                            </span>
+                        </div>
+                        <div class="p-2 overflow-y-auto">
+                            {% if allTeamsRegistred and allTeamsRegistred|length > 0 %}
+                                <div class="grid gap-1">
+                                    {% for team in allTeamsRegistred %}
+                                        <div class="group flex items-center p-3 rounded-lg hover:bg-indigo-50/50 transition-all duration-200 cursor-default">
+                                            <div class="w-11 h-11 rounded-full bg-primary flex items-center justify-center mr-4 text-base shadow-sm group-hover:scale-105 transition-transform">
+                                                {{ team.name|first|upper }}
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-gray-700 font-semibold group-hover:text-primary transition-colors">
+                                                    {{ team.name }}
+                                                </span>
+                                                <span class="text-xs text-gray-400">Inscrit au tournoi</span>
+                                            </div>
+                                            <div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Actif</span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="py-12 text-center">
+                                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 text-gray-400 mb-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-gray-500 font-medium">Aucune équipe inscrite pour le moment.</p>
+                                    <p class="text-sm text-gray-400">Soyez la première équipe à rejoindre !</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="px-5 py-4 bg-gray-50/30 border-t border-gray-50 text-right">
+                            <p class="text-sm text-gray-500 italic">
+                                Total : <strong class="text-gray-700">{{ allTeamsRegistred|length }}</strong> équipe{{ allTeamsRegistred|length > 1 ? 's' : '' }}
+                            </p>
+                        </div>
+                        <div class="card-padded border rounded-lg p-4 bg-white shadow-sm mt-10">
+                            <h3 class="font-bold mb-3 text-gray-800">Participer au tournoi</h3>
+
+                            {% if app.user and app.user.ownerTeams|length > 0 %}
+                                <form action="{{ path('app_tournament_register_team', {'id': tournament.id}) }}" method="POST" class="flex flex-col gap-3">
+
+                                    {% if app.user.ownerTeams|length > 1 %}
+                                        {# Si plusieurs équipes : on laisse le choix #}
+                                        <label for="team_select" class="text-sm text-gray-600">Choisissez votre équipe :</label>
+                                        <select name="team_id" id="team_select" class="border rounded px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-primary outline-none">
+                                            {% for team in app.user.ownerTeams %}
+                                                {% if not tournament.teams.contains(team) %}
+                                                    <option value="{{ team.id }}">{{ team.name }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    {% else %}
+                                        {# Si une seule équipe : on l'utilise directement #}
+                                        {% set singleTeam = app.user.ownerTeams|first %}
+                                        <input type="hidden" name="team_id" value="{{ singleTeam.id }}">
+                                        <p class="text-sm text-gray-700">Inscrire votre équipe : <strong>{{ singleTeam.name }}</strong></p>
+                                    {% endif %}
+
+                                    <button type="submit" class="bg-primary hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-all shadow-md">
+                                        Confirmer l'inscription
+                                    </button>
+                                </form>
+                            {% elseif app.user %}
+                                <div class="text-center p-4 bg-yellow-50 rounded border border-yellow-100">
+                                    <p class="text-yellow-700 text-sm">Vous n'avez pas encore d'équipe dont vous êtes le chef.</p>
+                                    <a href="{{ path('app_team_new') }}" class="text-primary font-bold text-sm underline mt-2 inline-block">Créer une équipe</a>
+                                </div>
+                            {% else %}
+                                <a href="{{ path('app_login') }}" class="block text-center bg-gray-100 py-2 rounded text-gray-600">Connectez-vous pour inscrire votre équipe</a>
+                            {% endif %}
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             {# Section commentaires #}
             {% if app.user %}
-                <div class="mb-8">
+                <div class="mb-10">
                     {{ form_start(commentForm, {
                         'action': path('app_comment_create', {id: tournament.id}),
                         'method': 'POST',
@@ -248,7 +348,7 @@
                     {{ form_end(commentForm) }}
                 </div>
             {% else %}
-                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8 text-center">
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-10 text-center">
                     <p class="text-gray-600 mb-4">Connectez-vous pour laisser un commentaire</p>
                     <a href="{{ path('app_login') }}" class="btn-primary-lg inline-flex items-center space-x-2">
                         <svg class="icon-with-text" fill="none" stroke="currentColor" viewbox="0 0 24 24"
