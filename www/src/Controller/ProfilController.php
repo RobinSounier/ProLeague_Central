@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\ProfilType;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,8 +19,16 @@ final class ProfilController extends AbstractController
     #[Route('', name: 'app_profil_show', methods: ['GET'])]
     public function show(): Response
     {
+
+        $user = $this->getUser();
+
+        $ownerTeamsCount = array_filter($user->getTeams()->toArray(), function ($team) use ($user) {
+            return $team->getOwner() === $user;
+        });
+
         return $this->render('profil/show.html.twig', [
-            'user' => $this->getUser(),
+            'user' => $user,
+            'ownerTeamsCount' => count($ownerTeamsCount),
         ]);
     }
 
@@ -56,6 +65,19 @@ final class ProfilController extends AbstractController
 
         return $this->render('profil/edit.html.twig', [
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/show/{id}', name: 'app_show_user', methods: ['GET'])]
+    public function showUser(User $user): Response
+    {
+        $ownerTeamsCount = array_filter($user->getTeams()->toArray(), function ($team) use ($user) {
+            return $team->getOwner() === $user;
+        });
+
+        return $this->render('profil/showUser.html.twig', [
+            'user' => $user,
+            'ownerTeamsCount' => count($ownerTeamsCount),
         ]);
     }
 }
