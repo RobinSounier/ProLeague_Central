@@ -69,7 +69,7 @@ class Tournament
     private Collection $comments;
 
     #[ORM\ManyToOne(inversedBy: 'ownerTournaments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $owner = null;
 
     public function __construct()
