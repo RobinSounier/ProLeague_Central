@@ -25,7 +25,7 @@
 							<a href="{{ path('app_admin_tournament') }}" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_tournament' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_tournament' ? 'background-color: var(--color-primary);' : '' }}">
 								Tournois
 							</a>
-							<a href="#" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_category' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_category' ? 'background-color: var(--color-primary);' : '' }}">
+							<a href="{{ path('app_admin_game_index') }}" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_game' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_game' ? 'background-color: var(--color-primary);' : '' }}">
 								Jeux
 							</a>
 							<a href="{{ path('app_admin_comment') }}" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_comment' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_comment' ? 'background-color: var(--color-primary);' : '' }}">
