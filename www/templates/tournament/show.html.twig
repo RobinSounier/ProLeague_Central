@@ -49,7 +49,7 @@
 
                 <div class="p-8">
                     {# En-tête #}
-                    <div class="flex items-start justify-between mb-_">
+                    <div class="flex items-start justify-between mb-4">
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-4">
                                 <span class="badge-category">
@@ -67,20 +67,14 @@
                                                 </svg>
                                                 <span>Modifier</span>
                                             </a>
-                                            <form action="{{ path('app_tournament_delete', {id: tournament.id}) }}"
-                                                  method="post" class="inline"
-                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce tournoi ?')">
-                                                <input type="hidden" name="_token"
-                                                       value="{{ csrf_token('delete_tournament_' ~ tournament.id) }}">
-                                                <button type="submit" class="btn-danger flex items-center space-x-2">
-                                                    <svg class="icon-with-text" fill="none" stroke="currentColor"
-                                                         viewbox="0 0 24 24" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                    </svg>
-                                                    <span>Supprimer</span>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn-danger flex items-center space-x-2" onclick="openDeleteModal()">
+                                                <svg class="icon-with-text" fill="none" stroke="currentColor"
+                                                     viewbox="0 0 24 24" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                <span>Supprimer</span>
+                                            </button>
                                         </div>
                                     {% endif %}
                                 {% endif %}
@@ -138,7 +132,7 @@
 
 
                     {# 3. Affichage conditionnel : le lien ET (l'appartenance à l'équipe OU admin) #}
-                    {% if tournament.link and (isRegistered or is_granted('APP_ADMIN')) %}
+                    {% if tournament.link and (isRegistered or is_granted('ROLE_ADMIN')) %}
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-10">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
@@ -404,8 +398,37 @@
         </div>
     </div>
 
+    <!-- Modal de confirmation de suppression -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Confirmer la suppression</h3>
+            <p class="text-gray-600 mb-6">Êtes-vous sûr de vouloir supprimer ce tournoi ? Cette action est irréversible.</p>
+            <div class="flex gap-3 justify-end">
+                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+                <form action="{{ path('app_tournament_delete', {id: tournament.id}) }}" method="post" class="inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_tournament_' ~ tournament.id) }}">
+                    <button type="submit" class="btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {% block javascript %}
     <script>
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        document.getElementById('deleteModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
         const voteButton = document.getElementById('vote-button');
         if (!voteButton) return;
@@ -460,7 +483,7 @@
                             }
                         }
                     });
-                %})
+                })
                 .catch(error => {
                     alert(error.message || "Une erreur est survenue");
                 })

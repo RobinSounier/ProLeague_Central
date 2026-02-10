@@ -204,10 +204,25 @@ final class TournamentController extends AbstractController
     #[Route('/{id}', name: 'app_tournament_delete', methods: ['POST'])]
     public function delete(Request $request, Tournament $tournament, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$tournament->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($tournament);
-            $entityManager->flush();
+        //on vérifie que le créateur est l'user en session
+        if ($tournament->getOwner() !== $this->getUser() && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('error', 'Vous n\'avez pas l\'autorisation de supprimer ce tournoi');
+            return $this->redirectToRoute('app_tournament_index', [], Response::HTTP_SEE_OTHER);
         }
+
+        //vérifie le token
+        $token = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('delete_tournament_' . $tournament->getId(), $token)) {
+            $this->addFlash('error', 'CSRF Token invalid');
+            return $this->redirectToRoute('app_tournament_show', ['id' => $tournament->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        $tournament->setIsActive(false);
+        $tournament->setUpdatedAt(new \DateTime());
+
+        $entityManager->flush();
+
+        $this->addFlash('success', "Le tournoi a été supprimé avec succès.");
 
         return $this->redirectToRoute('app_tournament_index', [], Response::HTTP_SEE_OTHER);
     }
