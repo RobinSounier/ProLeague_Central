@@ -54,4 +54,25 @@ class TournamentRepository extends ServiceEntityRepository
 
 
     }
+
+    public function findActive(int $id) : ?Tournament
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->leftJoin('c.game', 'cat')
+            ->leftJoin('c.owner', 'u')
+            ->leftJoin('c.votes', 'v')
+            ->leftJoin('c.medias', 'm')
+            ->where('c.isActive = :isActive')
+            ->andWhere('c.id = :id')
+            ->setParameter('isActive', true)
+            ->setParameter('id', $id);
+
+
+        return $qb->getQuery()->getOneOrNullResult();
+
+
+    }
+
+
+
 }
