@@ -22,7 +22,7 @@
 							<a href="#" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_user' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_user' ? 'background-color: var(--color-primary);' : '' }}">
 								Utilisateurs
 							</a>
-							<a href="#" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_challenge' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_challenge' ? 'background-color: var(--color-primary);' : '' }}">
+							<a href="{{ path('app_admin_tournament') }}" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_tournament' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_tournament' ? 'background-color: var(--color-primary);' : '' }}">
 								Tournois
 							</a>
 							<a href="#" class="px-3 py-2 rounded-md text-sm font-medium transition-colors {{ currentRoute starts with 'app_admin_category' ? 'text-white' : 'text-gray-700 hover:text-gray-900' }}" style="{{ currentRoute starts with 'app_admin_category' ? 'background-color: var(--color-primary);' : '' }}">

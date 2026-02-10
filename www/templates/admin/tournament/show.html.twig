@@ -1,0 +1,114 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tournoi :
+	{{ tournament.title }}
+	- Administration
+{% endblock %}
+
+{% block admin_content %}
+	<div class="mb-8">
+		<a href="{{ path('app_admin_tournament') }}" class="link-nav mb-4 inline-block">
+			← Retour à la liste
+		</a>
+		<h1 class="text-4xl text-gray-900 mb-2">{{ tournament.title }}</h1>
+		<p class="text-gray-600">Par
+			{{ tournament.owner.pseudo }}
+			•
+			{{ tournament.createdAt|date('d/m/Y à H:i') }}</p>
+	</div>
+
+	<div
+		class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+		<!-- Informations -->
+		<div class="lg:col-span-2 space-y-6">
+			<div class="card-padded">
+				<h2 class="text-2xl text-gray-900 mb-4">Informations</h2>
+				<dl class="space-y-4">
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Titre</dt>
+						<dd class="mt-1 text-sm text-gray-900">{{ tournament.title }}</dd>
+					</div>
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Description</dt>
+						<dd class="mt-1 text-sm text-gray-900 whitespace-pre-line">{{ tournament.description }}</dd>
+					</div>
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Catégorie</dt>
+						<dd class="mt-1">
+							<span class="badge-category-sm">{{ tournament.game.label }}</span>
+						</dd>
+					</div>
+					{% if tournament.deadline %}
+						<div>
+							<dt class="text-sm font-medium text-gray-500">Date limite</dt>
+							<dd class="mt-1 text-sm text-gray-900">{{ tournament.deadline|date('d/m/Y à H:i') }}</dd>
+						</div>
+					{% endif %}
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Statut</dt>
+						<dd class="mt-1">
+							{% if tournament.isActive %}
+								<span class="badge-category-sm" style="background-color: var(--color-success-light); color: var(--color-success);">Actif</span>
+							{% else %}
+								<span class="badge-category-sm" style="background-color: var(--color-error-light); color: var(--color-error);">Inactif</span>
+							{% endif %}
+						</dd>
+					</div>
+					<div>
+						<dt class="text-sm font-medium text-gray-500">Statistiques</dt>
+						<dd class="mt-1 text-sm text-gray-900">
+							{{ tournament.getVotes().count() }}
+							vote{{ tournament.getVotes().count() > 1 ? 's' : '' }}
+							•
+							{{ tournament.getComments().count() }}
+							commentaire{{ tournament.getComments().count() > 1 ? 's' : '' }}
+						</dd>
+					</div>
+				</dl>
+			</div>
+
+			<!-- Médias -->
+			{% if tournament.medias|length > 0 %}
+				<div class="card-padded">
+					<h2 class="text-2xl text-gray-900 mb-4">Fichiers</h2>
+					<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+						{% for media in tournament.medias %}
+							{% if media.path matches '/\\.(jpg|jpeg|png|gif|webp|svg)$/i' %}
+								<img src="{{ media.path }}" alt="Média {{ loop.index }}" class="w-full h-32 object-cover rounded-lg border border-gray-200">
+							{% else %}
+								<div class="w-full h-32 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+									<svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+									</svg>
+								</div>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+
+		<!-- Actions -->
+		<div class="space-y-6">
+			<div class="card-padded">
+				<h2 class="text-2xl text-gray-900 mb-4">Actions</h2>
+				<div class="space-y-3">
+					<a href="{{ path('app_tournament_show', {id: tournament.id}) }}" class="btn-secondary w-full" target="_blank">
+						Voir sur le site
+					</a>
+					<form method="post" action="{{ path('app_admin_tournament_toggle_active', {id: tournament.id}) }}">
+						<input type="hidden" name="_token" value="{{ csrf_token('toggle_tournament_' ~ tournament.id) }}">
+						<button type="submit" class="btn-secondary w-full">
+							{{ tournament.isActive ? 'Désactiver' : 'Activer' }}
+							le tournoi
+						</button>
+					</form>
+					<form method="post" action="{{ path('app_admin_tournament_delete', {id: tournament.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce tournoi ?');">
+						<input type="hidden" name="_token" value="{{ csrf_token('delete_tournament_' ~ tournament.id) }}">
+						<button type="submit" class="btn-danger w-full">Supprimer le tournoi</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
