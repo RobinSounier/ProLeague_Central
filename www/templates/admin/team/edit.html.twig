@@ -1,0 +1,181 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Administration - Modifier {{ team.name }}{% endblock %}
+
+{% block admin_content %}
+	<div class="mb-8">
+		<a href="{{ path('app_admin_team_index') }}" class="link-nav mb-4 inline-block">
+			← Retour à la liste
+		</a>
+		<div class="flex items-center gap-4">
+			<div class="w-14 h-14 bg-primary-light rounded-xl flex items-center justify-center">
+				<span class="text-primary-dark font-bold text-xl">{{ team.name|slice(0, 2)|upper }}</span>
+			</div>
+			<div>
+				<h1 class="text-4xl text-gray-900 font-bold" style="font-family: 'Outfit', sans-serif;">Modifier l'équipe</h1>
+				<p class="text-gray-600">{{ team.name }} • ID #{{ team.id }}</p>
+			</div>
+		</div>
+	</div>
+
+	{# Formulaire #}
+	<div class="card-padded">
+		{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+		{# Nom #}
+		<div>
+			{{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+			{{ form_widget(form.name, {'attr': {'class': 'form-input', 'placeholder': 'Ex: Team Phoenix'}}) }}
+			{{ form_errors(form.name) }}
+		</div>
+
+		{# Jeu & Propriétaire #}
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div>
+				{{ form_label(form.game, null, {'label_attr': {'class': 'form-label'}}) }}
+				{{ form_widget(form.game, {'attr': {'class': 'form-select'}}) }}
+				{{ form_errors(form.game) }}
+			</div>
+
+			{% if form.owner is defined %}
+				<div>
+					{{ form_label(form.owner, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.owner, {'attr': {'class': 'form-select'}}) }}
+					{{ form_errors(form.owner) }}
+				</div>
+			{% endif %}
+		</div>
+
+		{# Description #}
+		<div>
+			{{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+			{{ form_widget(form.description, {'attr': {'class': 'form-textarea', 'rows': '4', 'placeholder': 'Décrivez l\'équipe...'}}) }}
+			{{ form_errors(form.description) }}
+		</div>
+
+		{# Statut #}
+		{% if form.isActive is defined %}
+			<div>
+				<label class="form-label">Statut</label>
+				<div class="flex items-center gap-6">
+					<label class="inline-flex items-center cursor-pointer">
+						{{ form_widget(form.isActive, {'attr': {'class': 'sr-only peer'}}) }}
+						<div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-orange-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+						<span class="ml-3 text-sm font-medium text-gray-700">Équipe active</span>
+					</label>
+				</div>
+				{{ form_errors(form.isActive) }}
+			</div>
+		{% endif %}
+
+		{# Membres #}
+		{% if form.users is defined %}
+			<div>
+				{{ form_label(form.users, null, {'label_attr': {'class': 'form-label'}}) }}
+				{{ form_widget(form.users, {'attr': {'class': 'form-select', 'size': '5'}}) }}
+				<p class="text-sm text-gray-500 mt-1">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs membres.</p>
+				{{ form_errors(form.users) }}
+			</div>
+		{% endif %}
+
+		{# Champs restants #}
+		{{ form_rest(form) }}
+
+		{# Actions #}
+		<div class="flex flex-col sm:flex-row gap-4 pt-6">
+			<button type="submit" class="btn-primary-lg flex-1 flex items-center justify-center space-x-2">
+				<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+				</svg>
+				<span>Enregistrer les modifications</span>
+			</button>
+
+			<a href="{{ path('app_admin_team_show', {id: team.id}) }}" class="btn-secondary flex-1 text-center justify-center">
+				Annuler
+			</a>
+		</div>
+
+		{{ form_end(form) }}
+	</div>
+
+	{# Informations supplémentaires #}
+	<div class="card-padded mt-6">
+		<h2 class="text-2xl text-gray-900 mb-4" style="font-family: 'Outfit', sans-serif;">Informations</h2>
+		<dl class="space-y-4">
+			<div>
+				<dt class="text-sm font-medium text-gray-500">Date de création</dt>
+				<dd class="mt-1 text-sm text-gray-900">{{ team.createdAt|date('d/m/Y à H:i') }}</dd>
+			</div>
+			<div>
+				<dt class="text-sm font-medium text-gray-500">Dernière modification</dt>
+				<dd class="mt-1 text-sm text-gray-900">
+					{% if team.updatedAt %}
+						{{ team.updatedAt|date('d/m/Y à H:i') }}
+					{% else %}
+						<span class="text-gray-400">Jamais modifiée</span>
+					{% endif %}
+				</dd>
+			</div>
+			<div>
+				<dt class="text-sm font-medium text-gray-500">Statistiques</dt>
+				<dd class="mt-1 text-sm text-gray-900">
+					{{ team.users|length }} membre{{ team.users|length > 1 ? 's' : '' }}
+					•
+					{{ team.tournaments|length }} tournoi{{ team.tournaments|length > 1 ? 's' : '' }}
+				</dd>
+			</div>
+		</dl>
+	</div>
+
+	{# Zone de danger #}
+	<div class="mt-6 bg-white rounded-xl shadow-sm p-8 border border-error-border">
+		<h2 class="text-lg font-semibold text-error mb-4" style="font-family: 'Outfit', sans-serif;">Zone de danger</h2>
+		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+			<div>
+				<h3 class="font-medium text-gray-900">Supprimer cette équipe</h3>
+				<p class="text-sm text-gray-500">Une fois supprimée, l'équipe sera désactivée et ne pourra plus participer aux tournois.</p>
+			</div>
+			<button type="button" onclick="openDeleteModal()" class="btn-danger whitespace-nowrap">
+				Supprimer l'équipe
+			</button>
+		</div>
+	</div>
+
+	{# Modal de confirmation de suppression #}
+	<div id="deleteModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+		<div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+			<div class="flex items-center justify-center w-12 h-12 bg-error-light rounded-full mx-auto mb-4">
+				<svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+				</svg>
+			</div>
+			<h3 class="text-xl font-bold text-center text-gray-900 mb-2">Confirmer la suppression</h3>
+			<p class="text-gray-600 text-center mb-6">Êtes-vous sûr de vouloir supprimer l'équipe <strong>{{ team.name }}</strong> ? Cette action est irréversible.</p>
+			<div class="flex gap-3 justify-center">
+				<button type="button" class="btn-cancel" onclick="closeDeleteModal()">Annuler</button>
+				<form action="{{ path('app_admin_team_delete', {id: team.id}) }}" method="post" class="inline">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete_team_' ~ team.id) }}">
+					<button type="submit" class="btn-danger">Supprimer</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function openDeleteModal() {
+			document.getElementById('deleteModal').classList.remove('hidden');
+		}
+
+		function closeDeleteModal() {
+			document.getElementById('deleteModal').classList.add('hidden');
+		}
+
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape') closeDeleteModal();
+		});
+
+		document.getElementById('deleteModal').addEventListener('click', function(e) {
+			if (e.target === this) closeDeleteModal();
+		});
+	</script>
+{% endblock %}
