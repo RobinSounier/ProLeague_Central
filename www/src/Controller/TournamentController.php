@@ -55,6 +55,8 @@ final class TournamentController extends AbstractController
             $tournament->setCreatedAt(new \DateTime());
             $tournament->setIsActive(true);
             $tournament->setOwner($user);
+
+
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -188,6 +190,20 @@ final class TournamentController extends AbstractController
     {
         $form = $this->createForm(TournamentType::class, $tournament);
         $form->handleRequest($request);
+
+        if($form->isSubmitted()) {
+            // Vérification de la date
+            $deadlineJoin = $tournament->getDeadlineJoin();
+            $deadline = $tournament->getDeadline();
+
+            if ($deadlineJoin && $deadline && $deadlineJoin > $deadline) {
+                $this->addFlash('error', "La date limite d'inscription doit être avant la date de fin du tournoi");
+                return $this->render('tournament/edit.html.twig', [
+                    'tournament' => $tournament,
+                    'form' => $form,
+                ], new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY));
+            }
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();

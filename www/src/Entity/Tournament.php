@@ -6,6 +6,7 @@ use App\Repository\TournamentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
@@ -23,9 +24,11 @@ class Tournament
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThanOrEqual('today', message: 'La date doit être aujourd\'hui ou dans le futur')]
     private ?\DateTime $deadline = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\GreaterThanOrEqual('today', message: 'La date doit être aujourd\'hui ou dans le futur')]
     private ?\DateTime $deadlineJoin = null;
 
     #[ORM\Column]
@@ -69,7 +72,6 @@ class Tournament
     private Collection $comments;
 
     #[ORM\ManyToOne(inversedBy: 'ownerTournaments')]
-    #[ORM\JoinColumn(nullable: true)]
     private ?User $owner = null;
 
     public function __construct()

@@ -48,7 +48,6 @@ class Team
     private ?Game $game = null;
 
     #[ORM\ManyToOne(inversedBy: 'ownerTeams')]
-    #[ORM\JoinColumn(nullable: true)]
     private ?User $owner = null;
 
     public function __construct()

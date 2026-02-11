@@ -161,6 +161,8 @@ class AppFixtures extends Fixture
             $deadlineJoin->modify('-2 days');
             $tournament->setDeadlineJoin($deadlineJoin);
 
+            $tournament->setOwner($this->getReference('user_' . rand(0, 4), User::class));
+
             // --- Relations ---
             // On récupère le jeu via la référence par nom
             $tournament->setGame($this->getReference('game_name_' . $data['game'], Game::class));
@@ -196,6 +198,7 @@ class AppFixtures extends Fixture
             $team->setDescription("Équipe officielle de " . $data['name'] . " concourant au plus haut niveau sur " . $data['game'] . ".");
             $team->setIsActive(true);
             $team->setCreatedAt(new \DateTime('-' . rand(30, 100) . ' days'));
+            $team->setOwner($this->getReference('user_' . rand(0, 4), User::class));
 
             // 1. Assigne le Jeu via la référence par nom
             $gameReference = $this->getReference('game_name_' . $data['game'], Game::class);

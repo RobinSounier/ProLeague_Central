@@ -12,10 +12,12 @@
                 <p class="text-xl text-gray-600">
                     Organisez votre tournoi et rassemblez la communauté
                 </p>
+
             </div>
 
             <!-- Formulaire -->
             <div class="card-padded max-w-3xl mx-auto">
+                {% include "partials/_messages.html.twig" %}
                 {{ form_start(form, {
                     'attr': {
                         'class': 'space-y-6',
