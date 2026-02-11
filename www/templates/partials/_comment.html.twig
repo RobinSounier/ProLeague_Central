@@ -4,7 +4,7 @@
         <div class="flex-1">
             {# En-tête du commentaire #}
             <div class="flex items-center space-x-2 mb-2">
-                <span class="font-semibold text-gray-900">{{ comment.author.username ?? 'Utilisateur supprimé' }}</span>
+                <span class="font-semibold text-gray-900">{{ comment.author.pseudo ?? 'Utilisateur supprimé' }}</span>
                 <span class="text-sm text-gray-500">{{ comment.createdAt|date('d/m/Y à H:i') }}</span>
             </div>
 
