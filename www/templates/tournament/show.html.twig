@@ -416,18 +416,18 @@
     {% block javascript %}
     <script>
         function openDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
 
         function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-        }
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
 
         document.getElementById('deleteModal')?.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDeleteModal();
-            }
-        });
+        if (e.target === this) {
+        closeDeleteModal();
+    }
+    });
 
         document.addEventListener('DOMContentLoaded', function() {
         const voteButton = document.getElementById('vote-button');
@@ -435,63 +435,49 @@
 
         voteButton.addEventListener('click', function() {
         const button = this;
-        const tournamentId = button.dataset.tournamentId;
         const hasVoted = button.dataset.hasVoted === 'true';
 
-        // URLs générées dynamiquement selon tes nouvelles routes
-        const urlAdd = "{{ path('app_tournament_vote_add', {id: tournament.id}) }}";
-                const urlDelete = "{{ path('app_tournament_vote_delete', {id: tournament.id}) }}";
+        button.disabled = true;
 
-                const url = hasVoted ? urlDelete : urlAdd;
-                const method = hasVoted ? 'DELETE' : 'POST';
+        fetch("{{ path('app_tournament_vote_toggle', {id: tournament.id}) }}", {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    throw new Error(data.message);
+                }
 
-                button.disabled = true;
+                // Mise à jour de l'état
+                const newHasVoted = data.action === 'added';
+                button.dataset.hasVoted = newHasVoted.toString();
+                button.classList.toggle('voted', newHasVoted);
 
-                fetch(url, {
-                    method: method,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        throw new Error(data.message);
-                    }
+                // Mise à jour de l'icône
+                const svg = button.querySelector('svg');
+                if (svg) {
+                    svg.setAttribute('fill', newHasVoted ? 'currentColor' : 'none');
+                }
 
-                    // Mise à jour de l'état local du bouton
-                    const newHasVoted = !hasVoted;
-                    button.dataset.hasVoted = newHasVoted.toString();
-
-                    // Mise à jour visuelle (Classes et Textes)
-                    button.classList.toggle('voted', newHasVoted);
-
-
-                    // Mise à jour des compteurs (Bouton + Barre de stats)
-                    const countElements = [
-                        document.getElementById('vote-count'),
-                        document.getElementById('stats-vote-count')
-                    ];
-
-                    countElements.forEach(el => {
-                        if (el) {
-                            if (el.id === 'stats-vote-count') {
-                                el.textContent = `${data.voteCount} vote${data.voteCount > 1 ? 's' : ''}`;
-                            } else {
-                                el.textContent = data.voteCount;
-                            }
-                        }
-                    });
-                })
-                .catch(error => {
-                    alert(error.message || "Une erreur est survenue");
-                })
-                .finally(() => {
-                    button.disabled = false;
-                });
+                // Mise à jour des compteurs
+                const statsCount = document.getElementById('stats-vote-count');
+                if (statsCount) {
+                    statsCount.textContent = `${data.voteCount} vote${data.voteCount > 1 ? 's' : ''}`;
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert(error.message || "Une erreur est survenue");
+            })
+            .finally(() => {
+                button.disabled = false;
             });
         });
-    </script>
-    {% endblock %}
+    });
+</script>
+{% endblock %}
 {% endblock %}
