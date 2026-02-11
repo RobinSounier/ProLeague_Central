@@ -175,7 +175,6 @@ final class TeamController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function join(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {
-        // Verifier que l'utilisateur est connecte
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
@@ -185,13 +184,29 @@ final class TeamController extends AbstractController
             return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
         }
 
-        // Limite de 15 joueurs ---
+        // Limite de 15 joueurs
         if ($team->getUsers()->count() >= 15) {
             $this->addFlash('danger', 'Désolé, cette équipe a atteint sa limite de 15 joueurs.');
             return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
         }
 
-        //  Si tout est bon, on ajoute le joueur
+        // Vérifier si l'utilisateur est déjà inscrit aux mêmes tournois avec une autre équipe
+        $teamTournaments = $team->getTournaments();
+
+        if (!$teamTournaments->isEmpty()) {
+            foreach ($user->getTeams() as $userTeam) {
+                foreach ($userTeam->getTournaments() as $userTournament) {
+                    if ($teamTournaments->contains($userTournament)) {
+                        $this->addFlash('danger',
+                            'Vous ne pouvez pas rejoindre. Vous êtes déjà inscrit au tournoi "' . $userTournament->getTitle() . '" avec l\'équipe "' . $userTeam->getName() . '".'
+                        );
+                        return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+                    }
+                }
+            }
+        }
+
+        // Si tout est bon, on ajoute le joueur
         $team->addUser($user);
         $entityManager->flush();
 
