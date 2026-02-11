@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Informations de
+	{{ user.pseudo }}
+	- Pro League Central
+{% endblock %}
+
+{% block body %}
+	<div class="min-h-screen bg-main py-8">
+		<div class="container-medium">
+			{% include "partials/_messages.html.twig" %}
+
+			<div class="mb-8">
+				<h1 class="text-4xl font-bold text-gray-900 mb-2">Compte de
+					{{ user.pseudo }}</h1>
+			</div>
+
+			<div
+				class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				{# Sidebar - Infos principales #}
+				<div class="lg:col-span-1">
+					<div class="card card-padded sticky top-24">
+						<div class="text-center mb-6">
+							{% if user.avatar %}
+								<img src="{{ user.avatar }}" alt="{{ user.pseudo }}" class="w-24 h-24 rounded-full object-cover mx-auto mb-4">
+							{% else %}
+								<div class="w-24 h-24 rounded-full bg-linear-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white font-bold text-4xl mx-auto mb-4">
+									{{ user.pseudo|slice(0, 1)|upper }}
+								</div>
+							{% endif %}
+							<h2 class="text-2xl font-bold text-gray-900">{{ user.pseudo }}</h2>
+						</div>
+
+						<div class="border-t border-gray-200 pt-6 space-y-4">
+							<div>
+								<p class="text-sm font-semibold text-gray-700 mb-1">Inscrit le</p>
+								<p class="text-gray-900">{{ user.createdAt|date('d/m/Y à H:i') }}</p>
+							</div>
+							<div>
+								<p class="text-sm font-semibold text-gray-700 mb-1">Statut</p>
+								<span class="badge-success">
+									{% if user.isActive %}
+										Actif
+									{% else %}
+										Inactif
+									{% endif %}
+								</span>
+							</div>
+							{% if 'ROLE_ADMIN' in user.roles %}
+								<div>
+									<p class="text-sm font-semibold text-gray-700 mb-1">Rôle</p>
+									<span class="badge-category">Administrateur</span>
+								</div>
+							{% endif %}
+							{% if is_granted('ROLE_ADMIN') %}
+								<!-- Actions -->
+								<div class="space-y-6">
+									<h2 class="text-2xl text-gray-900 mb-4">Actions</h2>
+									<div class="space-y-3">
+										{% if user != app.user %}
+											<form method="post" action="{{ path('app_admin_user_toggle_active', {id: user.id}) }}">
+												<input type="hidden" name="_token" value="{{ csrf_token('toggle_user_' ~ user.id) }}">
+												<button type="submit" class="btn-secondary w-full">
+													{{ user.isActive ? 'Désactiver' : 'Activer' }}
+													l'utilisateur
+												</button>
+											</form>
+											<form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+												<input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
+												<button type="submit" class="btn-danger w-full">Supprimer l'utilisateur</button>
+											</form>
+										{% else %}
+											<p class="text-sm text-gray-600">Vous ne pouvez pas modifier votre propre compte.</p>
+										{% endif %}
+									</div>
+								</div>
+							{% endif %}
+
+						</div>
+					</div>
+				</div>
+
+				{# Contenu principal - Détails #}
+				<div class="lg:col-span-2">
+					<div class="card card-padded mb-6">
+						<h3 class="text-2xl font-bold text-gray-900 mb-6">Informations personnelles</h3>
+
+						<div
+							class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+							{# Section À Propos #}
+							<div class="md:col-span-2">
+								<h2 class="text-xl font-bold mb-4 text-gray-900">À propos de
+									{{ user.pseudo }}</h2>
+
+								{% if user.bio %}
+									<div
+										class="prose text-gray-600 leading-relaxed">
+										{# nl2br convertit les sauts de ligne en <br> HTML #}
+										{{ user.bio|nl2br }}
+									</div>
+								{% else %}
+									<div class="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+										<p class="text-gray-500 italic mb-2">Aucune biographie pour le moment.</p>
+									</div>
+								{% endif %}
+							</div>
+							<div>
+								<p class="text-sm font-semibold text-gray-700 mb-2">Pseudo</p>
+								<p class="text-lg text-gray-900 font-medium">{{ user.pseudo }}</p>
+							</div>
+						</div>
+
+					</div>
+
+					{# Statistiques #}
+					<div class="grid grid-cols-2 gap-4">
+						<div class="card card-padded text-center">
+							<p class="text-sm font-medium text-gray-600 mb-2">Tournois créés</p>
+							<p class="text-3xl font-bold text-primary">0</p>
+						</div>
+						<div class="card card-padded text-center">
+							<p class="text-sm font-medium text-gray-600 mb-2">Teams créées</p>
+							<p class="text-3xl font-bold text-accent">{{ ownerTeamsCount }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{# Mes défis #}
+			{% if user.teams|length > 0 %}
+				<div class="mt-12">
+					<h3 class="text-2xl font-bold text-gray-900 mb-6">Ses teams</h3>
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{% for team in user.teams %}
+							<div class="card card-padded">
+								<div class="flex items-start justify-between mb-3">
+									<h4 class="font-bold text-gray-900 flex-1">{{ team.name }}</h4>
+								</div>
+								<p class="text-sm text-gray-600 mb-4">{{ team.description|length > 100 ? team.description|slice(0, 100) ~ '...' : team.description }}</p>
+								<div class="flex items-center justify-between text-xs text-gray-500">
+									<span>Créé le
+										{{ team.createdAt|date('d/m/Y') }}</span>
+									<span class="badge-category">
+										{% if team.isActive %}
+											Actif
+										{% else %}
+											Inactif
+										{% endif %}
+									</span>
+								</div>
+								<a href="{{ path('app_team_show', { id: team.id }) }}" class="link-nav text-sm font-medium mt-3 inline-block">
+									Voir la team →
+								</a>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

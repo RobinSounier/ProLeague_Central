@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le tournoi - {{ tournament.title }}
+{% endblock %}
+
+{% block body %}
+    <section class="section">
+        <div class="container-medium">
+
+            {# Bouton retour rapide #}
+            <div class="mb-6">
+                <a href="{{ path('app_tournament_index') }}" class="link-nav inline-flex items-center text-sm font-medium">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Retour à la liste
+                </a>
+            </div>
+
+            {# En-tête #}
+            <div class="text-center mb-10">
+                <h1 class="text-4xl md:text-5xl text-gray-900 mb-4 font-bold" style="font-family: 'Outfit', sans-serif;">
+                    Modifier le Tournoi
+                </h1>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Ajustez les détails, mettez à jour les dates ou changez les modalités pour offrir la meilleure expérience compétitive.
+                </p>
+            </div>
+
+            {# Formulaire #}
+            <div class="card-padded max-w-3xl mx-auto shadow-xl rounded-2xl border border-gray-100 bg-white">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+                {# Champ Titre #}
+                <div>
+                    {{ form_label(form.title, "Titre du tournoi", {'label_attr': {'class': 'form-label font-semibold text-gray-700'}}) }}
+                    {{ form_widget(form.title, {'attr': {'class': 'form-input w-full rounded-lg border-gray-300 focus:ring-primary focus:border-primary', 'placeholder': 'Ex: Master Valorant Spring 2026'}}) }}
+                    {{ form_errors(form.title) }}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {# Champ Jeu #}
+                    <div>
+                        {{ form_label(form.game, "Jeu concerné", {'label_attr': {'class': 'form-label font-semibold text-gray-700'}}) }}
+                        {{ form_widget(form.game, {'attr': {'class': 'form-input w-full cursor-pointer'}}) }}
+                        {{ form_errors(form.game) }}
+                    </div>
+
+                    {# Champ Deadline Join #}
+                    <div>
+                        {{ form_label(form.deadlineJoin, "Fin des inscriptions", {'label_attr': {'class': 'form-label font-semibold text-gray-700'}}) }}
+                        {{ form_widget(form.deadlineJoin, {'attr': {'class': 'form-input w-full'}}) }}
+                        {{ form_errors(form.deadlineJoin) }}
+                    </div>
+                </div>
+
+                {# Champ Description #}
+                <div>
+                    {{ form_label(form.description, "Description & Règles", {'label_attr': {'class': 'form-label font-semibold text-gray-700'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-textarea w-full rounded-lg border-gray-300', 'rows': '6', 'placeholder': 'Détaillez le format, les gains, les règles spécifiques...'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                {# Champ Lien (Salon/Discord) #}
+                <div>
+                    {{ form_label(form.link, "Lien externe (Discord / Bracket)", {'label_attr': {'class': 'form-label font-semibold text-gray-700'}}) }}
+                    {{ form_widget(form.link, {'attr': {'class': 'form-input w-full', 'placeholder': 'https://...'}}) }}
+                    {{ form_errors(form.link) }}
+                </div>
+
+
+                {{ form_rest(form) }}
+
+                {# Boutons d'action #}
+                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-50">
+                    <button type="submit" class="btn-primary-lg flex-1 flex items-center justify-center space-x-2 py-4 rounded-xl transition-transform hover:scale-[1.02]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Mettre à jour le tournoi</span>
+                    </button>
+
+                    <a href="{{ path('app_tournament_show', {id: tournament.id}) }}" class="btn-secondary flex-1 text-center justify-center py-4 rounded-xl border border-gray-200 hover:bg-gray-50">
+                        Annuler
+                    </a>
+                </div>
+                {{ form_end(form) }}
+
+            </div>
+
+
+        </div>
+    </section>
+{% endblock %}

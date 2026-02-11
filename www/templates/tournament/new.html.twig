@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un tournoi - ProLeague Central{% endblock %}
+
+{% block body %}
+    <div class="section">
+        <div class="container-medium">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl text-gray-900 mb-4">
+                    Créer un nouveau tournoi
+                </h1>
+                <p class="text-xl text-gray-600">
+                    Organisez votre tournoi et rassemblez la communauté
+                </p>
+            </div>
+
+            <!-- Formulaire -->
+            <div class="card-padded max-w-3xl mx-auto">
+                {{ form_start(form, {
+                    'attr': {
+                        'class': 'space-y-6',
+                        'enctype': 'multipart/form-data'
+                    }
+                }) }}
+
+                <div>
+                    <!-- Titre -->
+                    {{ form_label(form.title, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.title) }}
+                    {{ form_errors(form.title) }}
+                </div>
+
+                <div>
+                    <!-- Description -->
+                    {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.description) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div>
+                    <!-- Jeu -->
+                    {{ form_label(form.game, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.game) }}
+                    {{ form_errors(form.game) }}
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <!-- Date limite d'inscription -->
+                        {{ form_label(form.deadlineJoin, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.deadlineJoin) }}
+                        {{ form_errors(form.deadlineJoin) }}
+                        <p class="text-sm text-gray-500 mt-1">Date limite pour rejoindre le tournoi</p>
+                    </div>
+
+                    <div>
+                        <!-- Date de fin du tournoi -->
+                        {{ form_label(form.deadline, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.deadline) }}
+                        {{ form_errors(form.deadline) }}
+                        <p class="text-sm text-gray-500 mt-1">Date de fin du tournoi</p>
+                    </div>
+                </div>
+
+                <div>
+                    <!-- Lien externe -->
+                    {{ form_label(form.link, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.link) }}
+                    {{ form_errors(form.link) }}
+                    <p class="text-sm text-gray-500 mt-1">Lien vers Discord, site web, ou règlement du tournoi</p>
+                </div>
+
+                <div>
+                    <!-- Fichiers -->
+                    {{ form_label(form.files, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.files) }}
+                    {{ form_errors(form.files) }}
+                    <p class="text-sm text-gray-500 mt-1">Types acceptés (JPEG, PNG, GIF, WEBP, SVG, AVIF). Taille max: 5MB par fichier</p>
+                </div>
+
+                {{ form_rest(form) }}
+
+                <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button class="btn-primary-lg flex-1 flex items-center justify-center space-x-2" type="submit">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                        </svg>
+                        <span>Créer le tournoi</span>
+                    </button>
+                    <a href="{{ path('app_tournament_index') }}" class="btn-secondary text-center">
+                        Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

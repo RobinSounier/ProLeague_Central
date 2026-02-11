@@ -1,0 +1,30 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouveau jeu - Administration {% endblock %}
+
+{% block admin_content %}
+    	<div class="mb-8">
+		<a href="{{ path('app_admin_game_index') }}" class="link-nav mb-4 inline-block">
+			← Retour à la liste
+		</a>
+		<h1 class="text-4xl text-gray-900 mb-2">Nouveau jeu</h1>
+	</div>
+
+	<div class="card-padded max-w-2xl">
+		{{ form_start(form, {'attr': {'class':'space-y-6'}}) }}
+
+		{{ form_label(form.label, null, {'label_attr':{'class': 'form-label'}}) }}
+        {{ form_widget(form.label) }}
+        {{ form_errors(form.label) }}
+
+        {{ form_rest(form) }}
+
+        <div class="flex gap-4 pt-4">
+            <button type="submit" class="btn-primary-lg">Ajouter le jeu</button>
+            <a href="{{ path('app_admin_game_index') }}" class="btn-secondary">Annuler</a>
+        </div>
+
+        {{ form_end(form) }}
+	</div>
+
+{% endblock %}

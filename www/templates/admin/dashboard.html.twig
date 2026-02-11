@@ -1,0 +1,154 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard - Pro League Central
+{% endblock %}
+
+{% block admin_content %}
+	<div class="mb-8">
+		<h1 class="text-4xl text-gray-900 mb-2">Dashboard</h1>
+		<p class="text-gray-600">Vue d'ensemble de la plateforme</p>
+	</div>
+
+	<!-- Statistiques -->
+	<div
+		class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+		<!-- Carte Utilisateurs -->
+		<div class="card-padded overflow-hidden relative">
+			<div class="relative z-10">
+				<p class="text-sm text-gray-600 mb-2">Utilisateurs</p>
+				<p class="text-4xl font-bold mb-1 text-primary">{{ stats.users.total }}</p>
+				<p class="text-xs text-gray-500">{{ stats.users.active }}
+					actifs</p>
+			</div>
+			<svg class="absolute bottom-0 right-0 w-20 h-20 opacity-20 -mr-4 -mb-4 text-primary" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+			</svg>
+		</div>
+
+		<!-- Carte Défis -->
+		<div class="card-padded overflow-hidden relative">
+			<div class="relative z-10">
+				<p class="text-sm text-gray-600 mb-2">Tournois</p>
+				<p class="text-4xl font-bold mb-1 text-accent">{{ stats.tournaments.total }}</p>
+				<p class="text-xs text-gray-500">{{ stats.tournaments.active }}
+					actifs</p>
+			</div>
+			<svg class="absolute bottom-0 right-0 w-20 h-20 opacity-20 -mr-4 -mb-4 text-accent" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewbox="0 0 24 24"><path fill="currentColor" d="M7 21v-2h4v-3.1q-1.225-.275-2.187-1.037T7.4 12.95q-1.875-.225-3.137-1.637T3 8V7q0-.825.588-1.412T5 5h2V3h10v2h2q.825 0 1.413.588T21 7v1q0 1.9-1.263 3.313T16.6 12.95q-.45 1.15-1.412 1.913T13 15.9V19h4v2zm0-10.2V7H5v1q0 .95.55 1.713T7 10.8m10 0q.9-.325 1.45-1.088T19 8V7h-2z"/></svg>
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V7a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+		</svg>
+	</div>
+
+	<!-- Carte Votes -->
+	<div class="card-padded overflow-hidden relative">
+		<div class="relative z-10">
+			<p class="text-sm text-gray-600 mb-2">Votes</p>
+			<p class="text-4xl font-bold mb-1 text-success">{{ stats.votes }}</p>
+		</div>
+		<svg class="absolute bottom-0 right-0 w-20 h-20 opacity-20 -mr-4 -mb-4 text-success" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+		</svg>
+	</div>
+
+	<!-- Carte Commentaires -->
+	<div class="card-padded overflow-hidden relative">
+		<div class="relative z-10">
+			<p class="text-sm text-gray-600 mb-2">Commentaires</p>
+			<p class="text-4xl font-bold mb-1 text-alert">{{ stats.comments }}</p>
+		</div>
+		<svg class="absolute bottom-0 right-0 w-20 h-20 opacity-20 -mr-4 -mb-4 text-alert" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+		</svg>
+	</div>
+
+	<!-- Carte Catégories -->
+	<div class="card-padded overflow-hidden relative">
+		<div class="relative z-10">
+			<p class="text-sm text-gray-600 mb-2">Jeux</p>
+			<p class="text-4xl font-bold mb-1 text-error">{{ stats.games }}</p>
+		</div>
+		<svg class="absolute bottom-0 right-0 w-20 h-20 opacity-20 -mr-4 -mb-4 text-error" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewbox="0 0 24 24"><path fill="currentColor" d="M7.97 16L5 19c-.33.3-.77.5-1.25.5A1.75 1.75 0 0 1 2 17.75v-.25l1-7.38A4.524 4.524 0 0 1 7.5 6h9c2.36 0 4.29 1.81 4.5 4.12l1 7.38v.25a1.75 1.75 0 0 1-1.75 1.75c-.48 0-.92-.2-1.25-.5l-2.97-3zM7 8v2H5v1h2v2h1v-2h2v-1H8V8zm9.5 0a.75.75 0 0 0-.75.75a.75.75 0 0 0 .75.75a.75.75 0 0 0 .75-.75a.75.75 0 0 0-.75-.75m-1.75 1.75a.75.75 0 0 0-.75.75a.75.75 0 0 0 .75.75a.75.75 0 0 0 .75-.75a.75.75 0 0 0-.75-.75m3.5 0a.75.75 0 0 0-.75.75a.75.75 0 0 0 .75.75a.75.75 0 0 0 .75-.75a.75.75 0 0 0-.75-.75M16.5 11.5a.75.75 0 0 0-.75.75a.75.75 0 0 0 .75.75a.75.75 0 0 0 .75-.75a.75.75 0 0 0-.75-.75"/>
+		</svg>
+	</div>
+
+	<!-- Carte Equipes -->
+	<div class="card-padded overflow-hidden relative">
+		<div class="relative z-10">
+			<p class="text-sm text-gray-600 mb-2">Equipes</p>
+			<p class="text-4xl font-bold mb-1 text-accent">{{ stats.teams.total }}</p>
+			<p class="text-xs text-gray-500">{{ stats.teams.active }}
+				actives</p>
+		</div>
+		<svg class="absolute bottom-0 right-0 w-20 h-20 opacity-20 -mr-4 -mb-4 text-accent" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewbox="0 0 24 24">
+			<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M1.874 17.625a2.625 2.625 0 1 0 5.25 0a2.625 2.625 0 0 0-5.25 0"/><path d="M8.249 23.25a4.25 4.25 0 0 0-7.5 0m16.125-5.625a2.625 2.625 0 1 0 5.25 0a2.625 2.625 0 0 0-5.25 0"/><path d="M23.249 23.25a4.25 4.25 0 0 0-7.5 0M9.374 3.375a2.625 2.625 0 1 0 5.25 0a2.625 2.625 0 0 0-5.25 0m5.874 4.875a4.27 4.27 0 0 0-6.5 0m.302 11.457a8.28 8.28 0 0 0 5.944-.018M6.348 6a8.22 8.22 0 0 0-2.6 6c0 .253.015.5.038.75m16.425 0c.022-.248.038-.5.038-.75a8.22 8.22 0 0 0-2.6-6"/></g>
+		</svg>
+	</div>
+
+</div>
+
+<!-- Derniers défis -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+	<div class="card-padded">
+		<div class="flex items-center justify-between mb-6">
+			<h2 class="text-2xl text-gray-900">Derniers Tournois</h2>
+			<a href="#" class="link-nav text-sm">Voir tout</a>
+		</div>
+		<div class="space-y-4">
+			{% if recentTournaments|length > 0 %}
+				{% for tournament in recentTournaments %}
+					<div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+						<div class="flex-1">
+							<h3 class="font-medium text-gray-900 mb-1">
+								<a href="#" class="hover:underline">
+									{{ tournament.title }}
+								</a>
+							</h3>
+							<p class="text-sm text-gray-600">{{ tournament.owner.pseudo }}
+								•
+								{{ tournament.createdAt|date('d/m/Y') }}</p>
+						</div>
+						{% if not tournament.isActive %}
+							class=" bg-error-light text-error">
+																												         Inactif
+						</span>
+					{% endif %}
+				</div>
+			{% endfor %}
+		{% else %}
+			<p class="text-gray-600 text-center py-4">Aucun défi récent</p>
+		{% endif %}
+	</div>
+</div>
+
+<div class="card-padded">
+	<div class="flex items-center justify-between mb-6">
+		<h2 class="text-2xl text-gray-900">Derniers utilisateurs</h2>
+		<a href="#" class="link-nav text-sm">Voir tout</a>
+	</div>
+	<div class="space-y-4">
+		{% if recentUsers|length > 0 %}
+			{% for user in recentUsers %}
+				<div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+					<div class="flex items-center space-x-3">
+						{% if user.avatar %}
+							<img src="{{ user.avatar }}" alt="{{ user.pseudo }}" class="w-10 h-10 rounded-full">
+						{% else %}
+							<div class="w-10 h-10 rounded-full flex items-center justify-center text-sm bg-primary-light text-primary">
+								{{ user.pseudo|slice(0, 1)|upper }}
+							</div>
+						{% endif %}
+						<div>
+							<p class="font-medium text-gray-900">{{ user.pseudo }}</p>
+							<p class="text-sm text-gray-600">{{ user.email }}</p>
+						</div>
+					</div>
+					{% if not user.isActive %}
+						class="badge-category-sm bg-error-light text-error">
+																								         Inactif
+					</span>
+				{% endif %}
+			</div>
+		{% endfor %}
+	{% else %}
+		<p class="text-gray-600 text-center py-4">Aucun utilisateur récent</p>
+	{% endif %}
+</div></div></div>{% endblock %}

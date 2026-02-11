@@ -1,0 +1,62 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Jeux - Administration
+{% endblock %}
+
+{% block admin_content %}
+	<div class="mb-8 flex items-center justify-between">
+		<div>
+			<h1 class="text-4xl text-gray-900 mb-2">Gestion des jeux</h1>
+			<p class="text-gray-600">Gérez les jeux des tournois</p>
+		</div>
+		<a href="{{ path('app_admin_game_new') }}" class="btn-primary flex items-center space-x-2">
+			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+			</svg>
+			<span>Nouveau jeu</span>
+		</a>
+	</div>
+
+	<!-- Liste des jeux -->
+	<div class="card-padded">
+		{% if games|length > 0 %}
+			<div class="overflow-x-auto">
+				<table class="min-w-full divide-y divide-gray-200">
+					<thead class="bg-gray-50">
+						<tr>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre de Tournois</th>
+							<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+						</tr>
+					</thead>
+					<tbody class="bg-white divide-y divide-gray-200">
+						{% for game in games %}
+							<tr class="hover:bg-gray-50">
+								<td class="px-6 py-4 whitespace-nowrap">
+									<span class="badge-category">{{ game.label }}</span>
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+									{{ game.tournaments|length }}
+									tournoi{{ game.tournaments|length > 1 ? 's' : '' }}
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+									<a href="{{ path('app_admin_game_edit', {id: game.id}) }}" class="link-nav mr-3">Modifier</a>
+									{% if game.tournaments|length == 0 %}
+										<form method="post" action="{{ path('app_admin_game_delete', {id: game.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce jeu ?');" class="inline">
+											<input type="hidden" name="_token" value="{{ csrf_token('delete_game_' ~ game.id) }}">
+											<button type="submit" class="link-danger">Supprimer</button>
+										</form>
+									{% else %}
+										<span class="text-gray-400 text-sm">Non supprimable</span>
+									{% endif %}
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% else %}
+			<p class="text-center text-gray-600 py-8">Aucun jeu</p>
+		{% endif %}
+	</div>
+{% endblock %}

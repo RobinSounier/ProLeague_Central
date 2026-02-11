@@ -1,0 +1,84 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Connecte toi
+{% endblock %}
+
+
+{% block body %}
+	<div class="min-h-screen flex  items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+
+		<div class="container-form space-y-8">
+
+			<div class="text-center">
+				<a class="inline-block mb-8 group" href="{{path('app_home') }}">
+					<img class="h-16 mx-auto transition-transform duration-200 group-hover:scale-105" src="/images/logo_PLC.png" alt="ProLeague Central">
+				</a>
+				<h1 class="text-3xl text-gray-900 mb-2">
+					{{ "Connexion"|upper}}
+				</h1>
+				<p class="text-sm text-gray-600 ">
+					Pas encore de compte ?
+					<a href="{{path('app_register') }}" class="font-medium transition-colors text-primary hover:text-primary-hover ">Inscris-toi</a>
+				</p>
+			</div>
+
+			<!-- Formulaire de connexion -->
+			<div class="card p-8">
+				<form method="post" class="space-y-6">
+                    {% if error %}
+                        <div class="alert alert-danger text-error p-4 bg-error-light flex rounded-lg items-center border border-error">
+                            <svg class="icon mr-2" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m0-18C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m2.59 6L12 10.59L9.41 8L8 9.41L10.59 12L8 14.59L9.41 16L12 13.41L14.59 16L16 14.59L13.41 12L16 9.41z"/></svg>
+                            {{ error }}
+                        </div>
+                    {% endif %}
+
+					{% if app.user %}
+						<div class="alert-info">
+							<div class="flex">
+								<div class="ml-3">
+									<p class="text-sm text-blue-700">
+										Vous etes connecté en tant que
+										<strong>{{ app.user.pseudo }}</strong>
+										<a class="text-blue-600 hover:text-blue-500 ml-2" href="{{ path('app_logout') }}">Déconnexion</a>
+									</p>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+
+					<input
+					type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+					<!-- Email -->
+					<div>
+						<label for="username" class="form-label">Email</label>
+						<input type="email" name="_username" id="username" class="form-input" placeholder="votre@email.com" value="{{ last_username }}" autocomplete="email" required autofocus>
+
+					</div>
+
+					<!-- password -->
+					<div>
+						<label for="password" class="form-label">Mot de passe</label>
+						<input type="password" name="_password" id="password" class="form-input" placeholder="••••••••" autocomplete="current-password" required>
+
+					</div>
+
+					<!-- bouton submit  -->
+					<div>
+
+						<button type="submit" class="btn-primary-lg w-full">
+							Se connecter
+						</button>
+
+					</div>
+
+
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+
+{% endblock %}

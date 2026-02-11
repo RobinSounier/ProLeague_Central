@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une équipe - ProLeague Central
+{% endblock %}
+
+{% block body %}
+	<section class="section">
+		<div
+			class="container-medium">
+
+			{# En-tête #}
+			<div class="text-center mb-12">
+				<h1 class="text-4xl md:text-5xl text-gray-900 mb-4 font-bold" style="font-family: 'Outfit', sans-serif;">
+					Fondez votre Team
+				</h1>
+				<p class="text-xl text-gray-600 max-w-2xl mx-auto">
+					Rassemblez vos joueurs, définissez votre identité et préparez-vous à la compétition.
+				</p>
+			</div>
+
+			{# Formulaire #}
+			<div class="card-padded max-w-3xl mx-auto">
+				{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+				{# Champ Nom #}
+				<div>
+					{{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.name, {'attr': {'class': 'form-input'}}) }}
+					{{ form_errors(form.name) }}
+				</div>
+
+				{# --- CHAMP JEU --- #}
+				<div>
+					{{ form_label(form.game, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.game, {'attr': {'class': 'form-input w-full cursor-pointer'}}) }}
+					{{ form_errors(form.game) }}
+					<p class="text-sm text-gray-500 mt-1">Le jeu sur lequel votre équipe évoluera principalement.</p>
+				</div>
+				{# ------------------------- #}
+
+				{# Champ Description #}
+				<div>
+					{{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(form.description, {'attr': {'class': 'form-textarea'}}) }}
+					{{ form_errors(form.description) }}
+				</div>
+
+				{# Boutons d'action #}
+				<div class="flex flex-col sm:flex-row gap-4 pt-6">
+					<button type="submit" class="btn-primary-lg flex-1 flex items-center justify-center space-x-2">
+						<svg class="icon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewbox="0 0 24 24"><path fill="currentColor" d="M12 4.5v15m7.5-7.5h-15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+						<span>Créer votre équipe</span>
+					</button>
+
+					<a href="{{ path('app_team_index') }}" class="btn-secondary flex-1 text-center justify-center">
+						Annuler
+					</a>
+				</div>
+
+				{{ form_end(form) }}
+			</div>
+		</div>
+	</section>
+{% endblock %}
