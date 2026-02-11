@@ -56,9 +56,17 @@ final class UserController extends AbstractController
     #[Route('/user/{id}', name: 'app_admin_user_show')]
     public function show(User $user): Response
     {
-        return $this->render('admin/user/show.html.twig', [
-            'user' => $user
+            
+        $ownerTeamsCount = array_filter($user->getTeams()->toArray(), function ($team) use ($user) {
+            return $team->getOwner() === $user;
+        });
+
+        return $this->render('profil/showUser.html.twig', [
+            'user' => $user,
+            'ownerTeamsCount' => count($ownerTeamsCount),
         ]);
+    
+
     }
 
     /**
