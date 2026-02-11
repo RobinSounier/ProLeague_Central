@@ -35,6 +35,8 @@ final class GameController extends AbstractController
             $entityManager->persist($game);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Jeu ajouté avec succès.');
+
             return $this->redirectToRoute('app_admin_game_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -60,7 +62,7 @@ final class GameController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+            $this->addFlash('success', 'Jeu modifié avec succès.');
             return $this->redirectToRoute('app_admin_game_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -70,14 +72,26 @@ final class GameController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_admin_game_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_admin_game_delete', methods: ['POST'])]
     public function delete(Request $request, Game $game, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$game->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($game);
-            $entityManager->flush();
+
+        $token = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('delete_game_'.$game->getId(), $token)) {
+            $this->addFlash('error', "Token CSRF invalide.");
+            $this->redirectToRoute('app_admin_game_index');
         }
 
+        //on vérifie si le jeu est utilisé
+        if($game->getTournaments()->count() > 0){
+            $this->addFlash('error', "Impossible de supprimer ce jeu car il est utilisé par des tournois.");
+            $this->redirectToRoute('app_admin_game_index');
+        }
+
+        $entityManager->remove($game);
+        $entityManager->flush();
+
+        $this->addFlash('success', "Jeu supprimé avec succès.");
         return $this->redirectToRoute('app_admin_game_index', [], Response::HTTP_SEE_OTHER);
     }
 }
