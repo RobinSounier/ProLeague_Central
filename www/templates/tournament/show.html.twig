@@ -239,23 +239,26 @@
                             {% if allTeamsRegistred and allTeamsRegistred|length > 0 %}
                                 <div class="grid gap-1">
                                     {% for team in allTeamsRegistred %}
-                                        <div
-                                            class="group flex items-center p-3 rounded-lg hover:bg-indigo-50/50 transition-all duration-200 cursor-default">
+                                        <a href="{{ path('app_team_show', {id: team.id}) }}" >
                                             <div
-                                                class="w-11 h-11 rounded-full bg-primary flex items-center justify-center mr-4 text-base shadow-sm group-hover:scale-105 transition-transform">
-                                                {{ team.name|first|upper }}
-                                            </div>
-                                            <div class="flex flex-col">
+                                                class="group flex items-center p-3 rounded-lg hover:bg-indigo-50/50 transition-all duration-200 cursor-pointer">
+                                                <div
+                                                    class="w-11 h-11 rounded-full bg-primary flex items-center justify-center mr-4 text-base shadow-sm group-hover:scale-105 transition-transform">
+                                                    {{ team.name|first|upper }}
+                                                </div>
+                                                <div class="flex flex-col">
                                                 <span
                                                     class="text-gray-700 font-semibold group-hover:text-primary transition-colors">
                                                     {{ team.name }}
                                                 </span>
-                                                <span class="text-xs text-gray-400">Inscrit au tournoi</span>
+                                                    <span class="text-xs text-gray-400">Inscrit au tournoi</span>
+                                                </div>
+                                                <div
+                                                    class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Actif</span>
+                                                </div>
                                             </div>
-                                            <div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Actif</span>
-                                            </div>
-                                        </div>
+                                        </a>
                                     {% endfor %}
                                 </div>
                             {% else %}

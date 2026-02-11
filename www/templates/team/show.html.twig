@@ -152,16 +152,21 @@
 					<h2 class="text-2xl font-bold mb-6 text-gray-900">Tournois</h2>
 
 					{% if team.tournaments|length > 0 %}
-						<ul class="space-y-3">
-							{% for tournament in team.tournaments %}
-								<li class="flex items-center p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary-lighter transition-all">
-									<span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-xs font-bold mr-3 flex-shrink-0">
+
+                            <ul class="space-y-3">
+                                {% for tournament in team.tournaments %}
+                                <a href="{{ path('app_tournament_show', {id: tournament.id}) }}">
+                                    <li class="flex items-center p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary-lighter transition-all">
+									<span
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white text-xs font-bold mr-3 flex-shrink-0">
 										{{ loop.index }}
 									</span>
-									<span class="text-gray-700 font-medium">{{ tournament.getTitle() }}</span>
-								</li>
-							{% endfor %}
-						</ul>
+                                        <span class="text-gray-700 font-medium">{{ tournament.getTitle() }}</span>
+                                    </li>
+                                </a>
+                                {% endfor %}
+                            </ul>
+
 					{% else %}
 						<p class="text-gray-500 text-center py-8">Aucun tournoi associé</p>
 					{% endif %}
