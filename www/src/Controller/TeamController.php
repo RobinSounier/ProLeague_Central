@@ -17,6 +17,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[Route('/team')]
 final class TeamController extends AbstractController
 {
+    /**
+     * @param TeamRepository $teamRepository
+     * @param GameRepository $gameRepository
+     * @param Request $request
+     * @return Response
+     */
     #[Route(name: 'app_team_index', methods: ['GET'])]
     public function index(TeamRepository $teamRepository, GameRepository $gameRepository, Request $request): Response
     {
@@ -38,6 +44,11 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/new', name: 'app_team_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -78,6 +89,10 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Team $team
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_team_show', methods: ['GET'])]
     public function show(Team $team): Response
     {
@@ -86,6 +101,12 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_team_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {
@@ -104,6 +125,12 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_team_delete', methods: ['POST'])]
     public function delete(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {
@@ -130,6 +157,12 @@ final class TeamController extends AbstractController
         return $this->redirectToRoute('app_team_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    /**
+     * @param Tournament $tournament
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/tournament/{id}/register-team', name: 'app_tournament_register_team', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     public function registerTeam(
@@ -170,7 +203,12 @@ final class TeamController extends AbstractController
         return $this->redirectToRoute('app_tournament_show', ['id' => $tournament->getId()]);
     }
 
-
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/join', name: 'app_team_join', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function join(Request $request, Team $team, EntityManagerInterface $entityManager): Response
@@ -215,6 +253,12 @@ final class TeamController extends AbstractController
         return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
     }
 
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/leave', name: 'app_team_leave', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function leave(Request $request, Team $team, EntityManagerInterface $entityManager): Response
