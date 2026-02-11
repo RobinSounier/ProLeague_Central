@@ -52,6 +52,30 @@
 									<span class="badge-category">Administrateur</span>
 								</div>
 							{% endif %}
+							{% if is_granted('ROLE_ADMIN') %}
+								<!-- Actions -->
+								<div class="space-y-6">
+									<h2 class="text-2xl text-gray-900 mb-4">Actions</h2>
+									<div class="space-y-3">
+										{% if user != app.user %}
+											<form method="post" action="{{ path('app_admin_user_toggle_active', {id: user.id}) }}">
+												<input type="hidden" name="_token" value="{{ csrf_token('toggle_user_' ~ user.id) }}">
+												<button type="submit" class="btn-secondary w-full">
+													{{ user.isActive ? 'Désactiver' : 'Activer' }}
+													l'utilisateur
+												</button>
+											</form>
+											<form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+												<input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
+												<button type="submit" class="btn-danger w-full">Supprimer l'utilisateur</button>
+											</form>
+										{% else %}
+											<p class="text-sm text-gray-600">Vous ne pouvez pas modifier votre propre compte.</p>
+										{% endif %}
+									</div>
+								</div>
+							{% endif %}
+
 						</div>
 					</div>
 				</div>
