@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Team;
+use App\Entity\User;
 use App\Form\TeamType;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,10 +49,11 @@ final class TeamController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_admin_team_show', methods: ['GET'])]
-    public function show(Team $team): Response
+    public function show(Team $team, User $user): Response
     {
         return $this->render('admin/team/show.html.twig', [
             'team' => $team,
+            'user' => $user,
         ]);
     }
 
