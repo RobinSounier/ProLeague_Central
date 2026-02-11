@@ -61,15 +61,10 @@ final class TournamentController extends AbstractController
             'filter' => $filter
         ]);
 
-
-
-        return $this->render('admin/tournament/index.html.twig', [
-            'controller_name' => 'TournamentController',
-        ]);
     }
 
     /**
-     * affiche le detail du tournoi 
+     * affiche le detail du tournoi
      * @param Tournament $tournament
      * @return Response
      */

@@ -16,6 +16,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
+    /**
+     * Liste admin des utilisateurs
+     * @param UserRepository $userRepository
+     * @param Request $request
+     * @return Response
+     */
     #[Route('/user', name: 'app_admin_user')]
     public function index(UserRepository $userRepository, Request $request): Response
     {
@@ -53,10 +59,15 @@ final class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * Voir la page d'un utilisateur
+     * @param User $user
+     * @return Response
+     */
     #[Route('/user/{id}', name: 'app_admin_user_show')]
     public function show(User $user): Response
     {
-            
+
         $ownerTeamsCount = array_filter($user->getTeams()->toArray(), function ($team) use ($user) {
             return $team->getOwner() === $user;
         });
@@ -65,7 +76,7 @@ final class UserController extends AbstractController
             'user' => $user,
             'ownerTeamsCount' => count($ownerTeamsCount),
         ]);
-    
+
 
     }
 

@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class TeamController extends AbstractController
 {
     /**
+     * Méthode pour lister les équipe
      * @param TeamRepository $teamRepository
      * @param GameRepository $gameRepository
      * @param Request $request
@@ -45,6 +46,7 @@ final class TeamController extends AbstractController
     }
 
     /**
+     * Méthode pour crée une équipe et renvoyer la vue
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @return Response
@@ -90,6 +92,7 @@ final class TeamController extends AbstractController
     }
 
     /**
+     * Méthode pour voir l'équipe en détail
      * @param Team $team
      * @return Response
      */
@@ -102,6 +105,7 @@ final class TeamController extends AbstractController
     }
 
     /**
+     * Méthode pour modifier une équipe
      * @param Request $request
      * @param Team $team
      * @param EntityManagerInterface $entityManager
@@ -126,6 +130,7 @@ final class TeamController extends AbstractController
     }
 
     /**
+     * Méthode pour supprimer une équipe
      * @param Request $request
      * @param Team $team
      * @param EntityManagerInterface $entityManager
@@ -158,6 +163,7 @@ final class TeamController extends AbstractController
     }
 
     /**
+     * Méthode pour inscrire sont équipe a un tournois
      * @param Tournament $tournament
      * @param Request $request
      * @param EntityManagerInterface $entityManager
@@ -204,6 +210,7 @@ final class TeamController extends AbstractController
     }
 
     /**
+     * Méthode pour rejoindre une équipe
      * @param Request $request
      * @param Team $team
      * @param EntityManagerInterface $entityManager
@@ -254,6 +261,7 @@ final class TeamController extends AbstractController
     }
 
     /**
+     * Méthode pour quitter une équipe
      * @param Request $request
      * @param Team $team
      * @param EntityManagerInterface $entityManager

@@ -22,6 +22,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/tournament')]
 final class TournamentController extends AbstractController
 {
+    /**
+     * Méthode pour voir les tournois
+     * @param TournamentRepository $tournamentRepository
+     * @param GameRepository $gameRepository
+     * @param Request $request
+     * @return Response
+     */
     #[Route(name: 'app_tournament_index', methods: ['GET'])]
     public function index(TournamentRepository $tournamentRepository, GameRepository $gameRepository, Request $request): Response
     {
@@ -43,6 +50,13 @@ final class TournamentController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour crée un tournois
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @param FileUploader $fileUploader
+     * @return Response
+     */
     #[Route('/new', name: 'app_tournament_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
     public function new(Request $request, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
@@ -98,6 +112,15 @@ final class TournamentController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour voir un tournois en détail
+     * @param int $id
+     * @param TournamentRepository $tournamentRepository
+     * @param VoteRepository $voteRepository
+     * @param EntityManagerInterface $entityManager
+     * @param Request $request
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_tournament_show', methods: ['GET'])]
     public function show(int $id, TournamentRepository $tournamentRepository, VoteRepository $voteRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
@@ -185,6 +208,13 @@ final class TournamentController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour modifier un tournois
+     * @param Request $request
+     * @param Tournament $tournament
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_tournament_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Tournament $tournament, EntityManagerInterface $entityManager): Response
     {
@@ -217,6 +247,13 @@ final class TournamentController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour supprimer un tounois
+     * @param Request $request
+     * @param Tournament $tournament
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_tournament_delete', methods: ['POST'])]
     public function delete(Request $request, Tournament $tournament, EntityManagerInterface $entityManager): Response
     {
@@ -300,6 +337,13 @@ final class TournamentController extends AbstractController
         return $this->redirectToRoute('app_tournament_show', ['id' => $tournament->getId()]);
     }
 
+    /**
+     * Méthode pour se désincrire d'un tournois
+     * @param Tournament $tournament
+     * @param EntityManagerInterface $entityManager
+     * @param Request $request
+     * @return Response
+     */
     #[Route('/tournament/{id}/unregister-team', name: 'app_tournament_unregister_team', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     public function unregisterTeam(
