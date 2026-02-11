@@ -22,6 +22,18 @@ final class ProfilController extends AbstractController
 
         $user = $this->getUser();
 
+        $registeredTournaments = [];
+
+        foreach ($this->getUser()->getTeams() as $team) {
+            foreach ($team->getTournaments() as $tournament) {
+                $registeredTournaments[$tournament->getId()] = $tournament;
+            }
+        }
+
+        $registeredTournaments = array_values($registeredTournaments);
+
+
+
         $ownerTeamsCount = array_filter($user->getTeams()->toArray(), function ($team) use ($user) {
             return $team->getOwner() === $user;
         });
@@ -29,6 +41,7 @@ final class ProfilController extends AbstractController
         return $this->render('profil/show.html.twig', [
             'user' => $user,
             'ownerTeamsCount' => count($ownerTeamsCount),
+            'registeredTournaments' => $registeredTournaments,
         ]);
     }
 

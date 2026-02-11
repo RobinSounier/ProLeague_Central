@@ -153,6 +153,36 @@
 					</div>
 				</div>
 			{% endif %}
+            {# Mes prochain tournois #}
+            {% if registeredTournaments|length > 0 %}
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Mes prochain tournois</h3>
+                    <div class="gap-6 space-y-6">
+                        {% for tournament in registeredTournaments %}
+                            <div class="card-padded">
+                                <div class="flex items-start justify-between mb-3">
+                                    <h4 class="font-bold text-gray-900 flex-1">{{ tournament.title }}</h4>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-4">{{ tournament.description|length > 100 ? team.description|slice(0, 100) ~ '...' : tournament.description }}</p>
+                                <div class="flex items-center justify-between text-xs text-gray-500">
+									<span>Le
+										{{ tournament.deadline|date('d/m/Y') }}</span>
+                                    <span class="badge-category">
+										{% if tournament.isActive %}
+                                            Actif
+                                        {% else %}
+                                            Inactif
+                                        {% endif %}
+									</span>
+                                </div>
+                                <a href="{{ path('app_tournament_show', { id: tournament.id }) }}" class="link-nav text-sm font-medium mt-3 inline-block">
+                                    Voir le tournois →
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
 		</div>
 	</div>
 {% endblock %}
