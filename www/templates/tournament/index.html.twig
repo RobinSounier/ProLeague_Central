@@ -25,12 +25,11 @@
 
             {# Filtres #}
             <div class="card mb-6">
-                <div class="flex flex-wrap items-center gap-4 p-6">
-                    {# Filtre par jeu #}
+                <form class="flex flex-wrap items-center gap-4 p-6" action="{{ path('app_tournament_index') }}" method="get">
                     {# Filtre par jeu #}
                     <div class="flex-1 min-w-[200px]">
-                        <label for="game-filter" class="block text-sm font-medium text-gray-700 mb-2">Filtrer par jeu</label>
-                        <select id="game-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <label for="game" class="block text-sm font-medium text-gray-700 mb-2">Filtrer par jeu</label>
+                        <select id="game" name="game" class="form-select" onchange="this.form.submit()">
                             <option value="0" {{ selectedGame == 0 ? 'selected' : '' }}>Tous les jeux</option>
                             {% for game in games %}
                                 <option value="{{ game.id }}" {{ selectedGame == game.id ? 'selected' : '' }}>
@@ -42,16 +41,24 @@
 
                     {# Filtre de tri #}
                     <div class="flex-1 min-w-[200px]">
-                        <label for="sort-filter" class="block text-sm font-medium text-gray-700 mb-2">Trier par</label>
-                        <select id="sort-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <label for="sort" class="block text-sm font-medium text-gray-700 mb-2">Trier par</label>
+                        <select id="sort" name="sort" class="form-select" onchange="this.form.submit()">
                             <option value="recent" {{ selectedSortBy == 'recent' ? 'selected' : '' }}>Plus récents</option>
                             <option value="popular" {{ selectedSortBy == 'popular' ? 'selected' : '' }}>Plus populaires</option>
                             <option value="oldest" {{ selectedSortBy == 'oldest' ? 'selected' : '' }}>Plus anciens</option>
                         </select>
                     </div>
-                </div>
-            </div>
 
+                    {# Bouton réinitialiser #}
+                    {% if selectedGame != 0 or selectedSortBy != 'recent' %}
+                        <div class="flex items-end">
+                            <a href="{{ path('app_tournament_index') }}" class="link-nav px-4 py-2">
+                                Réinitialiser
+                            </a>
+                        </div>
+                    {% endif %}
+                </form>
+            </div>
             {# Liste des tournois #}
             <div class="my-6">
                 {% if tournaments|length > 0 %}
@@ -169,33 +176,4 @@
             </div>
         </div>
     </div>
-
-    {% block javascript %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const gameFilter = document.getElementById('game-filter');
-        const sortFilter = document.getElementById('sort-filter');
-
-        // Fonction pour recharger la page avec les nouveaux filtres
-        function applyFilters() {
-        const params = new URLSearchParams();
-
-        // Toujours ajouter le paramètre game (même si c'est 0)
-        params.set('game', gameFilter.value);
-
-        // Ajouter le paramètre sort seulement si différent de 'recent'
-        if (sortFilter.value !== 'recent') {
-        params.set('sort', sortFilter.value);
-    }
-
-        const newUrl = `${window.location.pathname}?${params.toString()}`;
-        window.location.href = newUrl;
-    }
-
-        // Écouter les changements de filtres
-        gameFilter.addEventListener('change', applyFilters);
-        sortFilter.addEventListener('change', applyFilters);
-    });
-    </script>
-    {% endblock %}
 {% endblock %}
