@@ -1,4 +1,4 @@
-# 🎮 Esport Tournament Manager
+# 🎮 PRO LEAGUE CENTRAL
 
 Application web de gestion de tournois esport développée avec Symfony 7.
 
@@ -6,7 +6,7 @@ Application web de gestion de tournois esport développée avec Symfony 7.
 
 ## 📋 Description
 
-Esport Tournament Manager est une plateforme permettant aux joueurs et organisateurs de créer, gérer et participer à des tournois esport. L'application offre une gestion complète des équipes, des jeux, des commentaires et un système de vote.
+PRO LEAGUE CENTRAL est une plateforme permettant aux joueurs et organisateurs de créer, gérer et participer à des tournois esport. L'application offre une gestion complète des équipes, des jeux, des commentaires et un système de vote.
 
 **Projet réalisé dans le cadre d'un projet scolaire.**
 
@@ -63,11 +63,11 @@ Esport Tournament Manager est une plateforme permettant aux joueurs et organisat
 
 | Catégorie | Technologie |
 |-----------|-------------|
-| Framework | Symfony 7 |
+| Framework | Symfony 8.0.5 |
 | Langage | PHP 8.2+ |
 | Base de données | MySQL / PostgreSQL |
 | ORM | Doctrine |
-| Frontend | Twig, Symfony UX Turbo |
+| Frontend | Twig, Symfony |
 | CSS | Tailwind CSS |
 | Authentification | Symfony Security |
 | Upload | Service FileUploader personnalisé |
@@ -200,9 +200,9 @@ Application accessible sur : `http://127.0.0.1:8000`
 
 | Rôle | Email | Mot de passe |
 |------|-------|--------------|
-| Admin | admin@esport.com | password |
-| User | user1@esport.com | password |
-| User | user2@esport.com | password |
+| Admin | admin@admin.com | admin |
+| User | user1@euser.com | user |
+| User | user2@user.com | user |
 
 ---
 
@@ -333,12 +333,6 @@ npm run build
 ---
 
 ## 🐛 Résolution de problèmes
-
-### Erreur Turbo sur les formulaires
-Ajouter le statut HTTP 422 lors d'erreurs de validation :
-```php
-$response->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
-```
 
 ### Erreur d'upload de fichiers
 Vérifier les permissions du dossier `public/uploads/` :
