@@ -3,118 +3,181 @@
 {% block title %}Tournois - Administration{% endblock %}
 
 {% block admin_content %}
-	{# En-tête #}
-	<div class="mb-8">
-		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-			<div>
-				<h1 class="text-4xl text-gray-900 mb-2 font-bold" style="font-family: 'Outfit', sans-serif;">Gestion des tournois</h1>
-				<p class="text-gray-600">Gérez les tournois de la plateforme</p>
-			</div>
-		</div>
-	</div>
+    {# En-tête #}
+    <div class="mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-4xl text-gray-900 mb-2 font-bold" style="font-family: 'Outfit', sans-serif;">Gestion des tournois</h1>
+                <p class="text-gray-600">Gérez les tournois de la plateforme</p>
+            </div>
+        </div>
+    </div>
 
-	{# Statistiques rapides #}
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-		<div class="card p-6">
-			<div class="flex items-center">
-				<div class="p-3 bg-primary-light rounded-lg">
-					<svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-					</svg>
-				</div>
-				<div class="ml-4">
-					<p class="text-sm font-medium text-gray-500">Total tournois</p>
-					<p class="text-2xl font-bold text-gray-900">{{ tournaments|length }}</p>
-				</div>
-			</div>
-		</div>
+    {# Statistiques rapides #}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="card p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-primary-light rounded-lg">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Total tournois</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ tournaments|length }}</p>
+                </div>
+            </div>
+        </div>
 
-		<div class="card p-6">
-			<div class="flex items-center">
-				<div class="p-3 bg-success-light rounded-lg">
-					<svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-					</svg>
-				</div>
-				<div class="ml-4">
-					<p class="text-sm font-medium text-gray-500">Actifs</p>
-					<p class="text-2xl font-bold text-success">{{ tournaments|filter(t => t.isActive)|length }}</p>
-				</div>
-			</div>
-		</div>
+        <div class="card p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-success-light rounded-lg">
+                    <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Actifs</p>
+                    <p class="text-2xl font-bold text-success">{{ tournaments|filter(t => t.isActive)|length }}</p>
+                </div>
+            </div>
+        </div>
 
-		<div class="card p-6">
-			<div class="flex items-center">
-				<div class="p-3 bg-error-light rounded-lg">
-					<svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-					</svg>
-				</div>
-				<div class="ml-4">
-					<p class="text-sm font-medium text-gray-500">Inactifs</p>
-					<p class="text-2xl font-bold text-error">{{ tournaments|filter(t => not t.isActive)|length }}</p>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="card p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-error-light rounded-lg">
+                    <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Inactifs</p>
+                    <p class="text-2xl font-bold text-error">{{ tournaments|filter(t => not t.isActive)|length }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	{# Recherche et filtres #}
-	<div class="card-padded mb-6">
-		<form method="get" class="flex flex-col md:flex-row gap-4">
-			<input type="text" name="search" value="{{ search }}" placeholder="Rechercher par titre ou description..." class="form-input flex-1">
-			<select name="filter" class="form-select md:w-48">
-				<option value="all" {{ filter == 'all' ? 'selected' : '' }}>Tous</option>
-				<option value="active" {{ filter == 'active' ? 'selected' : '' }}>Actifs</option>
-				<option value="inactive" {{ filter == 'inactive' ? 'selected' : '' }}>Inactifs</option>
-			</select>
-			<button type="submit" class="btn-primary">Rechercher</button>
-			<a href="{{ path('app_admin_tournament') }}" class="btn-secondary">Réinitialiser</a>
-		</form>
-	</div>
+    {# Recherche et filtres #}
+    <div class="card-padded mb-6">
+        <form method="get" class="flex flex-col md:flex-row gap-4">
+            <input type="text" name="search" value="{{ search }}" placeholder="Rechercher par titre ou description..." class="form-input flex-1">
+            <select name="filter" class="form-select md:w-48">
+                <option value="all" {{ filter == 'all' ? 'selected' : '' }}>Tous</option>
+                <option value="active" {{ filter == 'active' ? 'selected' : '' }}>Actifs</option>
+                <option value="inactive" {{ filter == 'inactive' ? 'selected' : '' }}>Inactifs</option>
+            </select>
+            <button type="submit" class="btn-primary">Rechercher</button>
+            <a href="{{ path('app_admin_tournament') }}" class="btn-secondary">Réinitialiser</a>
+        </form>
+    </div>
 
-	{# Liste des tournois #}
-	<div class="card-padded">
-		{% if tournaments|length > 0 %}
-			<div class="space-y-4">
-				{% for tournament in tournaments %}
-					<div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors {{ not tournament.isActive ? 'opacity-60' : '' }}">
-						<div class="flex items-start justify-between">
-							<div class="flex-1">
-								<div class="flex items-center gap-3 mb-2">
-									<h3 class="text-lg font-semibold text-gray-900">
-										<a href="{{ path('app_admin_tournament_show', {id: tournament.id}) }}" class="hover:text-primary transition-colors">
-											{{ tournament.title }}
-										</a>
-									</h3>
-									{% if tournament.isActive %}
-										<span class="badge-category-sm" style="background-color: var(--color-success-light); color: var(--color-success);">Actif</span>
-									{% else %}
-										<span class="badge-category-sm" style="background-color: var(--color-error-light); color: var(--color-error);">Inactif</span>
-									{% endif %}
-								</div>
-								<p class="text-gray-600 text-sm mb-3">{{ tournament.description|slice(0, 200) }}{% if tournament.description|length > 200 %}...{% endif %}</p>
-								<div class="flex items-center gap-4 text-sm text-gray-500">
-									<span class="badge-category-sm">{{ tournament.game.label }}</span>
-									<span>Par {{ tournament.owner.pseudo }}</span>
-									<span>{{ tournament.createdAt|date('d/m/Y') }}</span>
-									<span>{{ tournament.getVotes().count() }} vote{{ tournament.getVotes().count() > 1 ? 's' : '' }}</span>
-									<span>{{ tournament.getComments().count() }} commentaire{{ tournament.getComments().count() > 1 ? 's' : '' }}</span>
-								</div>
-							</div>
-							<div class="ml-4">
-								<a href="{{ path('app_admin_tournament_show', {id: tournament.id}) }}" class="btn-secondary text-sm">Voir</a>
-							</div>
-						</div>
-					</div>
-				{% endfor %}
-			</div>
-		{% else %}
-			<div class="text-center py-12">
-				<svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-				</svg>
-				<p class="text-gray-500 text-lg">Aucun tournoi trouvé</p>
-			</div>
-		{% endif %}
-	</div>
+    {# Compteur de résultats #}
+    <div class="mb-4">
+        <p class="text-sm text-gray-600">
+            <strong>{{ pagination.getTotalItemCount }}</strong> tournoi(s) trouvé(s)
+        </p>
+    </div>
+
+    {# Liste des tournois #}
+    <div class="card-padded">
+        {% if pagination.getTotalItemCount > 0 %}
+            <div class="space-y-4">
+                {% for tournament in pagination %}
+                    <div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors {{ not tournament.isActive ? 'opacity-60' : '' }}">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h3 class="text-lg font-semibold text-gray-900">
+                                        <a href="{{ path('app_admin_tournament_show', {id: tournament.id}) }}" class="hover:text-primary transition-colors">
+                                            {{ tournament.title }}
+                                        </a>
+                                    </h3>
+                                    {% if tournament.isActive %}
+                                        <span class="badge-category-sm" style="background-color: var(--color-success-light); color: var(--color-success);">Actif</span>
+                                    {% else %}
+                                        <span class="badge-category-sm" style="background-color: var(--color-error-light); color: var(--color-error);">Inactif</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">{{ tournament.description|slice(0, 200) }}{% if tournament.description|length > 200 %}...{% endif %}</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                    <span class="badge-category-sm">{{ tournament.game.label }}</span>
+                                    <span>Par {{ tournament.owner.pseudo }}</span>
+                                    <span>{{ tournament.createdAt|date('d/m/Y') }}</span>
+                                    <span>{{ tournament.getVotes().count() }} vote{{ tournament.getVotes().count() > 1 ? 's' : '' }}</span>
+                                    <span>{{ tournament.getComments().count() }} commentaire{{ tournament.getComments().count() > 1 ? 's' : '' }}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <a href="{{ path('app_admin_tournament_show', {id: tournament.id}) }}" class="btn-secondary text-sm">Voir</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {# Pagination #}
+            <div class="mt-6 border-t pt-6">
+                <div class="pagination-wrapper">
+                    {{ knp_pagination_render(pagination, null, {}, {
+                        'search': search,
+                        'filter': filter
+                    }) }}
+                </div>
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <p class="text-gray-500 text-lg">Aucun tournoi trouvé</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {# Style personnalisé pour la pagination #}
+    <style>
+        .pagination-wrapper .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .pagination-wrapper .pagination li {
+            list-style: none;
+        }
+        .pagination-wrapper .pagination a,
+        .pagination-wrapper .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.5rem;
+            height: 2.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .pagination-wrapper .pagination a {
+            color: var(--color-text);
+            background-color: white;
+            text-decoration: none;
+        }
+        .pagination-wrapper .pagination a:hover {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        .pagination-wrapper .pagination .active span {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        .pagination-wrapper .pagination .disabled span {
+            color: #9ca3af;
+            cursor: not-allowed;
+            background-color: #f9fafb;
+        }
+    </style>
 {% endblock %}

@@ -32,7 +32,7 @@
                 </div>
                 <div class="ml-4">
                     <p class="text-sm font-medium text-gray-500">Total équipes</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ teams|length }}</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ pagination.getTotalItemCount }}</p>
                 </div>
             </div>
         </div>
@@ -80,21 +80,18 @@
         </div>
     </div>
 
-    {# Recherche #}
-    <div class="card-padded mb-6">
-        <div class="relative">
-            <input type="text" id="searchInput" placeholder="Rechercher une équipe..." class="form-input pl-10">
-            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-        </div>
+    {# Compteur de résultats #}
+    <div class="mb-4">
+        <p class="text-sm text-gray-600">
+            <strong>{{ pagination.getTotalItemCount }}</strong> équipe(s) au total
+        </p>
     </div>
 
     {# Liste des équipes #}
     <div class="card-padded">
-        {% if teams|length > 0 %}
+        {% if pagination.getTotalItemCount > 0 %}
             <div class="space-y-4">
-                {% for team in teams %}
+                {% for team in pagination %}
                     <div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors {{ not team.isActive ? 'opacity-60' : '' }}">
                         <div class="flex items-start justify-between">
                             <div class="flex items-center gap-4 flex-1">
@@ -151,6 +148,13 @@
                     </div>
                 {% endfor %}
             </div>
+
+            {# Pagination #}
+            <div class="mt-6 border-t pt-6">
+                <div class="pagination-wrapper">
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+            </div>
         {% else %}
             <div class="text-center py-12">
                 <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,6 +186,52 @@
         </div>
     </div>
 
+    {# Style personnalisé pour la pagination #}
+    <style>
+        .pagination-wrapper .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .pagination-wrapper .pagination li {
+            list-style: none;
+        }
+        .pagination-wrapper .pagination a,
+        .pagination-wrapper .pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.5rem;
+            height: 2.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .pagination-wrapper .pagination a {
+            color: var(--color-text);
+            background-color: white;
+            text-decoration: none;
+        }
+        .pagination-wrapper .pagination a:hover {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        .pagination-wrapper .pagination .active span {
+            background-color: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        .pagination-wrapper .pagination .disabled span {
+            color: #9ca3af;
+            cursor: not-allowed;
+            background-color: #f9fafb;
+        }
+    </style>
+
     <script>
         function openDeleteModal(button) {
             const id = button.dataset.id;
@@ -197,15 +247,6 @@
         function closeDeleteModal() {
             document.getElementById('deleteModal').classList.add('hidden');
         }
-
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const filter = this.value.toLowerCase();
-            const items = document.querySelectorAll('.space-y-4 > div');
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(filter) ? '' : 'none';
-            });
-        });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closeDeleteModal();
