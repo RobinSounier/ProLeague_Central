@@ -26,6 +26,7 @@ class Comment
     private ?\DateTime $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?self $parentComment = null;
 
     /**
