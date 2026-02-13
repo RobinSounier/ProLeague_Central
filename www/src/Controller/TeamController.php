@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Team;
 use App\Entity\Tournament;
+use App\Entity\User;
 use App\Form\TeamType;
 use App\Repository\GameRepository;
 use App\Repository\TeamRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -297,6 +300,73 @@ final class TeamController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Vous avez quitté l\'équipe avec succès.');
+
+        return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+    }
+
+    #[Route('/{id}/member', name: 'app_team_members', methods: ['GET'])]
+    public function members(Team $team, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->getUser(); // Récupère l'utilisateur connecté
+        $members = $team->getUsers();
+        $owner = $team->getOwner();
+
+        // Vérification : Seul le owner peut retirer un membre
+        if ($owner !== $currentUser) {
+            $this->addFlash('danger', 'Acces interdit.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        return $this->render('team/members.html.twig', [
+            'team' => $team,
+            'members' => $members,
+            'user' => $currentUser,
+        ]);
+    }
+
+    #[Route('/{teamId}/member/{userId}/leave', name: 'app_team_member_leave', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function leaveMember(
+        #[MapEntity(id: 'teamId')] Team $team,
+        #[MapEntity(id: 'userId')] User $userToRemove,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->getUser();
+        $owner = $team->getOwner();
+
+        // Vérification : Seul le owner peut retirer un membre
+        if ($owner !== $currentUser) {
+            $this->addFlash('danger', 'Seul le propriétaire de l\'équipe peut retirer un membre.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // Vérification CSRF (Sécurité)
+        if (!$this->isCsrfTokenValid('delete_team_member_' . $team->getId(), $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Action invalide (Token CSRF).');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // Vérification : Le owner ne peut pas se retirer lui-même
+        if ($userToRemove === $owner) {
+            $this->addFlash('danger', 'Le propriétaire ne peut pas quitter son équipe. Vous devez la supprimer.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // Vérification : L'utilisateur est-il membre de l'équipe ?
+        if (!$team->getUsers()->contains($userToRemove)) {
+            $this->addFlash('warning', 'Cet utilisateur ne fait pas partie de cette équipe.');
+            return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
+        }
+
+        // Retrait de l'utilisateur
+        $team->removeUser($userToRemove);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le membre a été retiré de l\'équipe avec succès.');
 
         return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
     }

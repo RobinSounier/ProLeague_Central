@@ -34,6 +34,11 @@
 											<span class="text-base">👑</span>
 											Propriétaire
 										</div>
+                                        {# Bouton pour modifier les membre #}
+                                            <a href="{{ path('app_team_members', {'id': team.id}) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-sm font-medium">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                                Gérer les membres
+                                            </a>
 									{% else %}
 										{# B. C'est un MEMBRE #}
 										<form action="{{ path('app_team_leave', {'id': team.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir quitter cette équipe ?');">
