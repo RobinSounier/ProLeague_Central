@@ -7,6 +7,8 @@ use App\Entity\User;
 use App\Form\TeamType;
 use App\Repository\TeamRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,14 +19,32 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class TeamController extends AbstractController
 {
+    /**
+     * @param TeamRepository $teamRepository
+     * @return Response
+     */
     #[Route('', name: 'app_admin_team_index', methods: ['GET'])]
-    public function index(TeamRepository $teamRepository): Response
+    public function index(TeamRepository $teamRepository, Request $request, PaginatorInterface $paginator): Response
     {
+        $teams = $teamRepository->findAll();
+
+        $pagination = $paginator->paginate(
+            $teams,
+            $request->query->getInt('page', 1),
+            5
+        );
+
         return $this->render('admin/team/index.html.twig', [
-            'teams' => $teamRepository->findAll(),
+            'pagination' => $pagination,
+            'teams' => $teams, // Gardé pour les statistiques
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/new', name: 'app_admin_team_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -48,6 +68,11 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Team $team
+     * @param User $user
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_team_show', methods: ['GET'])]
     public function show(Team $team, User $user): Response
     {
@@ -57,6 +82,12 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_admin_team_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {
@@ -77,6 +108,12 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/toggle', name: 'app_admin_team_toggle', methods: ['POST'])]
     public function toggle(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {
@@ -96,6 +133,12 @@ final class TeamController extends AbstractController
         return $this->redirectToRoute('app_admin_team_index');
     }
 
+    /**
+     * @param Request $request
+     * @param Team $team
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_team_delete', methods: ['POST'])]
     public function delete(Request $request, Team $team, EntityManagerInterface $entityManager): Response
     {

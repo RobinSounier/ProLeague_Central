@@ -27,6 +27,7 @@
 
             {# Formulaire #}
             <div class="card-padded max-w-3xl mx-auto shadow-xl rounded-2xl border border-gray-100 bg-white">
+                {% include "partials/_messages.html.twig" %}
                 {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
 
                 {# Champ Titre #}

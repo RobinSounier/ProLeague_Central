@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Membres de {{ team.name }}{% endblock %}
+
+{% block body %}
+    <div class="min-h-screen mb-8">
+        <div class="container-main">
+            <!-- Back Button -->
+            <div class="pt-8 pb-6">
+                <a href="{{ path('app_team_show', {'id': team.id}) }}" class="link-nav">
+                    ⏎ Retour à l'équipe
+                </a>
+            </div>
+            {% include "partials/_messages.html.twig" %}
+
+            <!-- Header Section -->
+            <div class="card-padded mb-8">
+                <h1 class="text-4xl font-bold mb-3">Membres de {{ team.name }}</h1>
+                <p class="text-gray-600 text-lg leading-relaxed max-w-2xl">Découvrez les membres qui composent cette équipe.</p>
+            </div>
+
+            {% if team.users|length > 0 %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for user in team.users %}
+                        <div class="card-hover p-6 flex items-center gap-4">
+                            {% if user.getAvatar() !== null %}
+                                <img src="{{ user.avatar }}" alt="{{ user.pseudo }}" class="w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                            {% else %}
+                                <div class="w-10 h-10 rounded-full bg-primary text-white font-bold flex items-center justify-center mr-3 text-sm flex-shrink-0">
+                                    {{ user.pseudo|first|upper }}
+                                </div>
+                            {% endif %}
+                            <h2 class="text-xl font-semibold">{{ user.pseudo }}</h2>
+                            <p class="text-gray-600 text-sm">Membre depuis {{ user.createdAt|date('d M Y') }}</p>
+
+                            <button type="button" onclick="openDeleteModal({{ team.id }}, {{ user.id }})" >
+                                <svg class="icon text-error" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m0-18C6.47 2 2 6.47 2 12s4.47 10 10 10s10-4.47 10-10S17.53 2 12 2m2.59 6L12 10.59L9.41 8L8 9.41L10.59 12L8 14.59L9.41 16L12 13.41L14.59 16L16 14.59L13.41 12L16 9.41z"/></svg>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-600">Aucun membre dans cette équipe pour le moment.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold mb-4">Confirmer la suppression</h3>
+            <p class="text-gray-600 mb-6">Êtes-vous sûr de vouloir supprimer ce joueur de votre équipe ? Cette action est irréversible.</p>
+            <div class="flex gap-3 justify-end">
+                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Annuler</button>
+                <form id="deleteForm" method="post" class="inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_team_member_' ~ team.id) }}">
+                    <button type="submit" class="btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openDeleteModal(teamId, userId) {
+            const form = document.getElementById('deleteForm');
+            form.action = `/team/${teamId}/member/${userId}/leave`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        // Fermer la modal en cliquant en dehors
+        document.getElementById('deleteModal')?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+    </script>
+{% endblock %}

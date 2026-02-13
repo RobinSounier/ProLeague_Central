@@ -5,6 +5,8 @@ namespace App\Controller\Admin;
 use App\Entity\Tournament;
 use App\Repository\TournamentRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\Paginator;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,7 +27,7 @@ final class TournamentController extends AbstractController
 
 
     #[Route('/tournament', name: 'app_admin_tournament')]
-    public function index(TournamentRepository $tournamentRepository, Request $request): Response
+    public function index(TournamentRepository $tournamentRepository, Request $request, PaginatorInterface $paginator): Response
     {
         // on recupere les parametres de recherche ou de tri depuis l'url
         $search = $request->query->get('search', '');
@@ -55,21 +57,24 @@ final class TournamentController extends AbstractController
         //reindexer le tableau après filtrage
         $tournaments = array_values($tournaments);
 
+
+        $pagination = $paginator->paginate(
+            $tournaments,
+            $request->query->getInt('page', 1),
+            5
+        );
+
         return $this->render('admin/tournament/index.html.twig', [
+            'pagination' => $pagination,
             'tournaments' => $tournaments,
             'search' => $search,
             'filter' => $filter
         ]);
 
-
-
-        return $this->render('admin/tournament/index.html.twig', [
-            'controller_name' => 'TournamentController',
-        ]);
     }
 
     /**
-     * affiche le detail du tournoi 
+     * affiche le detail du tournoi
      * @param Tournament $tournament
      * @return Response
      */

@@ -19,6 +19,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Url;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class TournamentType extends AbstractType
 {
@@ -62,9 +63,14 @@ class TournamentType extends AbstractType
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-input',
+                    'min' => (new \DateTime())->format('Y-m-d\TH:i')
                 ],
                 'constraints' => [
-                    new NotNull(message: "La date de fin est obligatoire.")
+                    new NotNull(message: "La date de fin est obligatoire."),
+                    new Assert\GreaterThanOrEqual([
+                        'value' => 'today',
+                        'message' => 'La date ne peut pas être dans le passé'
+                    ])
                 ]
             ])
             ->add('deadlineJoin', DateTimeType::class, [
@@ -73,8 +79,15 @@ class TournamentType extends AbstractType
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-input',
+                    'min' => (new \DateTime())->format('Y-m-d\TH:i')
                 ],
-                'help' => 'Laissez vide si les inscriptions sont ouvertes jusqu\'à la fin du tournoi'
+                'help' => 'Laissez vide si les inscriptions sont ouvertes jusqu\'à la fin du tournoi',
+                'constraints' => [
+                    new Assert\GreaterThanOrEqual([
+                        'value' => 'today',
+                        'message' => 'La date ne peut pas être dans le passé'
+                    ])
+                ]
             ])
             ->add('link', UrlType::class, [
                 'label' => 'Lien externe (Discord, site web, etc.)',

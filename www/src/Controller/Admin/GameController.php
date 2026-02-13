@@ -16,6 +16,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[IsGranted('ROLE_ADMIN')]
 final class GameController extends AbstractController
 {
+    /**
+     * Méthode pour voir les jeux
+     * @param GameRepository $gameRepository
+     * @return Response
+     */
     #[Route(name: 'app_admin_game_index', methods: ['GET'])]
     public function index(GameRepository $gameRepository): Response
     {
@@ -24,6 +29,12 @@ final class GameController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour ajouter les jeux
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/new', name: 'app_admin_game_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -46,6 +57,11 @@ final class GameController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour voir les jeux en détails
+     * @param Game $game
+     * @return Response
+     */
     #[Route('/{id}', name: 'app_admin_game_show', methods: ['GET'])]
     public function show(Game $game): Response
     {
@@ -54,6 +70,13 @@ final class GameController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour modifier un jeu
+     * @param Request $request
+     * @param Game $game
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/edit', name: 'app_admin_game_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Game $game, EntityManagerInterface $entityManager): Response
     {
@@ -72,6 +95,13 @@ final class GameController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour supprimer un jeu
+     * @param Request $request
+     * @param Game $game
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/delete', name: 'app_admin_game_delete', methods: ['POST'])]
     public function delete(Request $request, Game $game, EntityManagerInterface $entityManager): Response
     {

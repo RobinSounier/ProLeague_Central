@@ -14,6 +14,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class CommentController extends AbstractController
 {
+    /**
+     * Crée un commentaire
+     * @param int $id
+     * @param TournamentRepository $tournamentRepository
+     * @param EntityManagerInterface $entityManager
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     #[Route('/tournament/{id}/comment', name: 'app_comment_create', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     public function create(

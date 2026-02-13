@@ -1,612 +1,364 @@
-# Recipe Docker - Symfony 8
+# 🎮 PRO LEAGUE CENTRAL
 
-Configuration Docker professionnelle pour un projet Symfony 8 avec Apache, PHP 8.3 et MariaDB.
-
-## 🚀 Stack Technique
-
-- **Framework** : Symfony 8
-- **PHP** : 8.4+ avec Apache (mod_rewrite activé)
-- **Base de données** : MariaDB 11.3
-- **Extensions PHP** : GD, Intl, MySQLi, PDO, PDO_MySQL
-- **Outils** : Composer 2, Symfony CLI, Node.js 20 (via NVM), Xdebug
-
-## 📋 Prérequis
-
-- Docker Engine 20.10+
-- Docker Compose 2.0+
-- Git
-
-## 🏗️ Structure du Projet
-
-```
-.
-├── apache/
-│   ├── Dockerfile          # Image Apache/PHP personnalisée
-│   └── custom-php.ini      # Configuration PHP personnalisée
-├── db/
-│   ├── backup.sh           # Script de sauvegarde
-│   ├── restore.sh          # Script de restauration
-│   └── init.sql            # Scripts SQL d'initialisation
-├── www/                    # Code source de l'application
-├── docker-compose.yml      # Configuration Docker Compose
-├── .dockerignore           # Fichiers exclus du build
-├── .env.example            # Modèle de configuration (à copier en .env)
-├── .env                    # Configuration locale (ignoré par Git)
-├── .htaccess              # Configuration Apache
-├── aliases.sh             # Aliases pour faciliter l'utilisation
-└── README.md              # Ce fichier
-```
-
-## 🚦 Démarrage Rapide
-
-### 1. Configuration de l'environnement
-
-**Étape importante** : Créez votre fichier `.env` à partir du modèle `.env.example` :
-
-```bash
-# Copier le fichier exemple vers .env
-cp .env.example .env
-
-# Éditer le fichier .env selon vos besoins
-nano .env
-# ou
-code .env
-```
-
-Le fichier `.env.example` contient toutes les variables nécessaires avec des valeurs par défaut pour le développement. **Modifiez les valeurs selon vos besoins**, notamment :
-
-- `APACHE_PORT` : Port d'Apache (par défaut `8000` si le port 80 est occupé)
-- `MYSQL_ROOT_PASSWORD` : Mot de passe root de MariaDB
-- `MYSQL_DATABASE` : Nom de votre base de données
-- `MYSQL_USER` : Utilisateur de l'application
-- `MYSQL_PASSWORD` : Mot de passe de l'utilisateur
-
-**⚠️ Important** : Le fichier `.env` est automatiquement ignoré par Git (voir `.gitignore`). Ne commitez **JAMAIS** le fichier `.env` dans Git car il contient des informations sensibles.
-
-**Structure du fichier `.env`** :
-
-```bash
-# Configuration Apache / PHP
-APACHE_PORT=8000
-PHP_ERROR_REPORTING=E_ALL
-PHP_DISPLAY_ERRORS=On
-
-# Configuration MariaDB
-MARIADB_PORT=3306
-MYSQL_ROOT_PASSWORD=changez_moi_en_production
-MYSQL_DATABASE=nom_de_votre_bdd
-MYSQL_USER=utilisateur_bdd
-MYSQL_PASSWORD=changez_moi_en_production
-MYSQL_ROOT_HOST=%
-
-# Noms des containers (pour aliases.sh)
-APACHE_CONTAINER=apache_vierge
-MARIADB_CONTAINER=mariadb_vierge
-```
-
-### 2. Construction et démarrage
-
-```bash
-# Construire les images et démarrer les containers
-docker compose up -d --build
-
-# Vérifier l'état des containers
-docker compose ps
-
-# Voir les logs
-docker compose logs -f
-```
-
-### 3. Accès aux services
-
-- **Application web** : http://localhost:8000 (ou le port défini dans `.env`)
-- **MariaDB** : localhost:3306
-  - Utilisateur root : `root` / Mot de passe : défini dans `.env`
-  - Utilisateur : défini dans `.env` (par défaut `utilisateur_bdd`)
-
-**Note** : Si le port 80 est déjà utilisé (par exemple par Traefik), le port par défaut est `8000`. Vous pouvez le modifier dans votre fichier `.env`.
-
-## 🎯 Configuration Symfony 8
-
-### Installation d'un nouveau projet
-
-Si vous n'avez pas encore de projet Symfony :
-
-```bash
-# Entrer dans le container Apache
-capache
-
-# Créer un nouveau projet Symfony 8 directement dans www
-cd /var/www/html
-composer create-project symfony/skeleton:"8.0.x" ./
-
-# Installer les dépendances supplémentaires
-composer require symfony/orm-pack
-composer require symfony/maker-bundle --dev
-```
-
-### Structure recommandée pour Symfony
-
-```
-www/
-├── public/
-│   └── index.php           # Point d'entrée de l'application
-├── src/
-│   ├── Controller/
-│   ├── Entity/
-│   ├── Repository/
-│   └── ...
-├── templates/
-├── migrations/
-├── config/
-│   ├── packages/
-│   └── routes.yaml
-├── .env                    # Variables d'environnement (à modifier)
-├── .env.local              # Variables locales (ignoré par Git)
-├── composer.json
-└── symfony.lock
-```
-
-### Configuration `.env` pour Symfony
-
-Modifiez les variables dans votre `.env` :
-
-```env
-# .env
-APP_ENV=dev
-APP_DEBUG=true
-APP_SECRET=ChangeMe
-
-# Database Configuration
-DATABASE_URL="mysql://utilisateur_bdd:changez_moi_en_production@mariadb:3306/nom_de_votre_bdd?serverVersion=11.3-MariaDB&charset=utf8mb4"
-
-# Mailer Configuration
-MAILER_DSN=null://null
-```
-
-### Initialisation de la base de données
-
-```bash
-# Entrer dans le container
-capache
-
-# Créer la base de données
-cconsole doctrine:database:create
-
-# Générer et exécuter les migrations
-cconsole make:migration
-cconsole doctrine:migrations:migrate
-```
-
-**Ou sans alias :**
-
-```bash
-# Créer la base de données
-docker compose exec apache_vierge php bin/console doctrine:database:create
-
-# Générer et exécuter les migrations
-docker compose exec apache_vierge php bin/console make:migration
-docker compose exec apache_vierge php bin/console doctrine:migrations:migrate
-```
-
-### Développement avec Symfony
-
-```bash
-# Créer une entité
-cconsole make:entity
-
-# Créer un contrôleur
-cconsole make:controller NomDuController
-
-# Générer un formulaire
-cconsole make:form
-
-# Lancer les tests
-composer test
-
-# Débogage avec Symfony profiler
-# Accéder à /_profiler pour analyser les requêtes
-```
-
-**Ou sans alias :**
-
-```bash
-# Créer une entité
-docker compose exec apache_vierge php bin/console make:entity
-
-# Créer un contrôleur
-docker compose exec apache_vierge php bin/console make:controller NomDuController
-
-# Générer un formulaire
-docker compose exec apache_vierge php bin/console make:form
-
-# Lancer les tests
-docker compose exec apache_vierge composer test
-
-# Débogage avec Symfony profiler
-# Accéder à /_profiler pour analyser les requêtes
-```
-
-**Note** : `.env.local` est ignoré par Git. Utilisez-le pour vos configurations spécifiques locales.
-
-
-
-### Charger les aliases
-
-```bash
-source aliases.sh
-```
-
-### Commandes utiles
-
-#### Avec les aliases (plus rapide)
-
-```bash
-# Composer (installation de dépendances)
-ccomposer install
-ccomposer require symfony/orm-pack
-
-# Symfony Console
-cconsole cache:clear
-cconsole doctrine:migrations:migrate
-cconsole doctrine:database:create
-cconsole doctrine:schema:update --force
-
-# Accéder aux containers
-capache    # Entrer dans le container Apache
-cmariadb   # Entrer dans le container MariaDB
-
-# Base de données
-db-export  # Sauvegarder la base de données
-db-import  # Restaurer la base de données
-```
-
-#### Sans aliases (avec docker compose exec)
-
-```bash
-# Composer (installation de dépendances)
-docker compose exec apache_vierge composer install
-docker compose exec apache_vierge composer require symfony/orm-pack
-
-# Symfony Console
-docker compose exec apache_vierge php bin/console cache:clear
-docker compose exec apache_vierge php bin/console doctrine:migrations:migrate
-docker compose exec apache_vierge php bin/console doctrine:database:create
-docker compose exec apache_vierge php bin/console doctrine:schema:update --force
-
-# Accéder aux containers
-docker compose exec apache_vierge bash     # Entrer dans le container Apache
-docker compose exec mariadb_vierge bash    # Entrer dans le container MariaDB
-
-# Base de données
-docker compose exec mariadb_vierge /docker-entrypoint-initdb.d/backup.sh   # Sauvegarder
-docker compose exec mariadb_vierge /docker-entrypoint-initdb.d/restore.sh  # Restaurer
-```
-
-### Commandes Docker Compose
-
-```bash
-# Démarrer les services
-docker compose up -d
-
-# Arrêter les services
-docker compose stop
-
-# Arrêter et supprimer les containers
-docker compose down
-
-# Reconstruire les images
-docker compose build --no-cache
-
-# Voir les logs
-docker compose logs -f apache_vierge
-docker compose logs -f mariadb_vierge
-
-# Exécuter une commande dans un container
-docker compose exec apache_vierge bash
-docker compose exec mariadb_vierge bash
-```
-
-## 🔒 Sécurité
-
-### Bonnes pratiques implémentées
-
-✅ **Réseau isolé** : Les services communiquent via un réseau Docker privé  
-✅ **Healthchecks** : Vérification automatique de la santé des containers  
-✅ **Variables d'environnement** : Mots de passe configurables via `.env`  
-✅ **Limites de ressources** : Contrôle de la mémoire et CPU  
-✅ **Versions fixées** : Images Docker versionnées pour la reproductibilité  
-✅ **.dockerignore** : Exclusion des fichiers inutiles du contexte de build  
-
-### Recommandations de sécurité
-
-1. **Toujours utiliser `.env.example` comme modèle** : Copiez-le en `.env` et modifiez les valeurs
-2. **Ne jamais commiter le fichier `.env`** dans Git (déjà configuré dans `.gitignore`)
-3. **Utiliser des mots de passe forts** en production
-4. **Limiter l'exposition des ports** en production (utiliser un reverse proxy)
-5. **Désactiver Xdebug** en production (modifier le Dockerfile)
-6. **Vérifier que `.env` est bien ignoré** : `git status` ne doit pas lister `.env`
-
-## 📊 Gestion de la Base de Données
-
-### Sauvegarde
-
-```bash
-# Via alias
-db-export
-
-# Ou directement
-docker compose exec mariadb_vierge /docker-entrypoint-initdb.d/backup.sh
-```
-
-Le fichier de sauvegarde sera créé dans `./db/init.sql` sur l'hôte.
-
-### Restauration
-
-```bash
-# Via alias
-db-import
-
-# Ou directement
-docker compose exec mariadb_vierge /docker-entrypoint-initdb.d/restore.sh
-```
-
-### Scripts SQL d'initialisation
-
-Placez vos scripts SQL dans le dossier `./db/`. Ils seront automatiquement exécutés au premier démarrage de MariaDB.
-
-## 🐛 Débogage avec Xdebug
-
-Xdebug est installé et configuré. Pour l'utiliser avec VSCode :
-
-1. Décommentez les lignes dans `apache/custom-php.ini` :
-```ini
-xdebug.client_host = host.docker.internal
-xdebug.client_port = 9003
-xdebug.start_with_request = yes
-xdebug.idekey = VSCODE
-```
-
-2. Configurez VSCode avec `.vscode/launch.json` :
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Listen for Xdebug",
-      "type": "php",
-      "request": "launch",
-      "port": 9003,
-      "pathMappings": {
-        "/var/www/html": "${workspaceFolder}/www"
-      }
-    }
-  ]
-}
-```
-
-## ⚙️ Configuration PHP
-
-Le fichier `apache/custom-php.ini` contient les paramètres personnalisés :
-
-- Limites d'upload : 100M
-- Mémoire : 256M
-- Timeout d'exécution : 300s
-- Timezone : Europe/Paris
-
-Modifiez selon vos besoins.
-
-## 🔧 Optimisations
-
-### Build optimisé
-
-- **Couches Docker réduites** : RUN combinés pour réduire la taille de l'image
-- **Cache apt nettoyé** : Réduction de la taille finale
-- **Compilation parallèle** : Utilisation de `-j$(nproc)` pour les extensions PHP
-- **.dockerignore** : Exclusion des fichiers inutiles
-
-### Performance
-
-- **Healthchecks** : Détection rapide des problèmes
-- **Limites de ressources** : Contrôle de la consommation
-- **Réseau isolé** : Communication optimisée entre services
-
-## 📝 Notes de Production
-
-Avant de déployer en production :
-
-1. **Desactiver le mode debug** :
-   ```env
-   APP_ENV=prod
-   APP_DEBUG=false
-   ```
-
-2. **Générer une clé secrète unique** :
-   ```bash
-   cconsole secrets:generate-keys
-   ```
-
-3. **Désactiver Xdebug** dans le Dockerfile
-
-4. **Modifier les variables PHP** : `PHP_DISPLAY_ERRORS=Off`
-
-5. **Utiliser un reverse proxy** (Nginx/Traefik) au lieu d'exposer directement le port 80
-
-6. **Configurer des sauvegardes automatiques** de la base de données
-
-7. **Mettre en place la surveillance** (logs, métriques)
-
-8. **Utiliser HTTPS** avec un certificat SSL
-
-9. **Optimiser le cache Symfony** :
-   ```bash
-   cconsole cache:warmup
-   ```
-
-10. **Vérifier les permissions des fichiers** :
-    ```bash
-    docker compose exec apache_vierge chown -R www-data:www-data /var/www/html
-    docker compose exec apache_vierge chmod -R 755 /var/www/html
-    ```
-
-## 🆘 Dépannage
-
-### Le container Apache ne démarre pas
-
-```bash
-# Vérifier les logs
-docker compose logs apache_vierge
-
-# Vérifier que le dossier www existe
-ls -la www/
-```
-
-### La base de données n'est pas accessible
-
-```bash
-# Vérifier que MariaDB est healthy
-docker compose ps
-
-# Vérifier les logs
-docker compose logs mariadb_vierge
-
-# Tester la connexion
-docker compose exec mariadb_vierge mariadb -uroot -p
-```
-
-### Problèmes de permissions
-
-```bash
-# Vérifier les permissions du dossier www
-ls -la www/
-
-# Si nécessaire, corriger les permissions dans le container
-docker compose exec apache_vierge chown -R www-data:www-data /var/www/html
-```
-
-### Erreur "Forbidden" ou "403"
-
-Si vous voyez une erreur "Forbidden" lors de l'accès à l'application :
-
-1. **Vérifier qu'un fichier `index.php` existe** dans `www/public/` :
-```bash
-ls -la www/public/index.php
-```
-
-2. **Créer un fichier index.php de test** si nécessaire :
-```bash
-echo "<?php phpinfo(); ?>" > www/public/index.php
-```
-
-3. **Vérifier les permissions** dans le container :
-```bash
-docker compose exec apache_vierge chown -R www-data:www-data /var/www/html
-docker compose exec apache_vierge chmod -R 755 /var/www/html
-```
-
-### Port déjà utilisé
-
-Si vous obtenez l'erreur "port is already allocated" :
-
-1. **Identifier quel service utilise le port** :
-```bash
-docker ps | grep :80
-# ou
-sudo lsof -i :80
-```
-
-2. **Changer le port dans `.env`** :
-```bash
-# Éditer .env et modifier APACHE_PORT
-APACHE_PORT=8000  # ou tout autre port libre
-```
-
-3. **Redémarrer les containers** :
-```bash
-docker compose down && docker compose up -d
-```
-
-### Problèmes spécifiques à Symfony
-
-#### Erreur "No route found"
-
-Si vous obtenez une erreur 404 "No route found" :
-
-1. **Vérifier que le fichier `.htaccess` existe** et que `mod_rewrite` est actif :
-```bash
-docker compose exec apache_vierge a2enmod rewrite
-```
-
-2. **Vérifier les routes configurées** :
-```bash
-cconsole debug:router
-```
-
-3. **Vérifier le fichier `.env`** et la configuration de l'application
-
-#### Erreur Doctrine/Base de données
-
-Si vous avez une erreur concernant la base de données :
-
-```bash
-# Vérifier la connexion
-cconsole dbal:run-sql "SELECT 1"
-
-# Créer la base de données
-cconsole doctrine:database:create
-
-# Exécuter les migrations
-cconsole doctrine:migrations:migrate
-```
-
-**Ou sans alias :**
-
-```bash
-# Vérifier la connexion
-docker compose exec apache_vierge php bin/console dbal:run-sql "SELECT 1"
-
-# Créer la base de données
-docker compose exec apache_vierge php bin/console doctrine:database:create
-
-# Exécuter les migrations
-docker compose exec apache_vierge php bin/console doctrine:migrations:migrate
-```
-
-#### Cache Symfony
-
-Si le cache pose problème :
-
-```bash
-# Vider le cache complètement
-cconsole cache:clear --no-warmup
-
-# Reconstruire le cache
-cconsole cache:warmup
-```
-
-**Ou sans alias :**
-
-```bash
-# Vider le cache complètement
-docker compose exec apache_vierge php bin/console cache:clear --no-warmup
-
-# Reconstruire le cache
-docker compose exec apache_vierge php bin/console cache:warmup
-```
-
-
-
-## 📚 Ressources
-
-- [Documentation Docker Compose](https://docs.docker.com/compose/)
-- [Documentation PHP](https://www.php.net/docs.php)
-- [Documentation MariaDB](https://mariadb.com/docs/)
-
-## 📄 Licence
-
-Ce template est fourni tel quel pour vos projets.
+Application web de gestion de tournois esport développée avec Symfony 7.
 
 ---
 
-**Créé avec ❤️ pour Symfony 8**
+## 📋 Description
 
+PRO LEAGUE CENTRAL est une plateforme permettant aux joueurs et organisateurs de créer, gérer et participer à des tournois esport. L'application offre une gestion complète des équipes, des jeux, des commentaires et un système de vote.
+
+**Projet réalisé dans le cadre d'un projet scolaire.**
+
+---
+
+## 👥 Équipe de développement
+
+| Membre | Rôle |
+|--------|------|
+| **Benjamin LACAZE** | Développeur |
+| **Sofiane ROS** | Développeur |
+| **Robin SOUNIER** | Développeur |
+
+---
+
+## ✨ Fonctionnalités
+
+### Utilisateurs
+- Inscription et authentification sécurisée
+- Gestion de profil personnalisé
+- Système de rôles (User / Admin)
+
+### Tournois
+- Création et gestion de tournois
+- Définition des dates limites d'inscription
+- Association à un jeu spécifique
+- Upload de médias (images, documents)
+- Inscription des équipes
+
+### Équipes
+- Création et gestion d'équipes
+- Ajout/suppression de membres
+- Inscription aux tournois
+- Propriétaire d'équipe
+
+### Jeux
+- Catalogue des jeux disponibles
+- Association aux tournois et équipes
+
+### Interactions
+- Système de commentaires
+- Système de votes
+- Notifications flash
+
+### Administration
+- Dashboard administrateur
+- Gestion des utilisateurs
+- Modération des commentaires
+- Gestion des tournois, équipes et jeux
+
+---
+
+## 🛠️ Technologies
+
+| Catégorie | Technologie |
+|-----------|-------------|
+| Framework | Symfony 8.0.5 |
+| Langage | PHP 8.2+ |
+| Base de données | MySQL / PostgreSQL |
+| ORM | Doctrine |
+| Frontend | Twig, Symfony |
+| CSS | Tailwind CSS |
+| Authentification | Symfony Security |
+| Upload | Service FileUploader personnalisé |
+
+---
+
+## 📁 Structure du projet
+```
+src/
+├── Controller/
+│   ├── Admin/
+│   │   ├── AdminController.php       # Dashboard admin
+│   │   ├── CommentController.php     # CRUD commentaires (admin)
+│   │   ├── GameController.php        # CRUD jeux (admin)
+│   │   ├── TeamController.php        # CRUD équipes (admin)
+│   │   ├── TournamentController.php  # CRUD tournois (admin)
+│   │   └── UserController.php        # CRUD utilisateurs (admin)
+│   ├── CommentController.php         # Gestion des commentaires
+│   ├── HomeController.php            # Page d'accueil
+│   ├── ProfilController.php          # Gestion du profil utilisateur
+│   ├── RegistrationController.php    # Inscription
+│   ├── SecurityController.php        # Login / Logout
+│   ├── TeamController.php            # Gestion des équipes
+│   ├── TournamentController.php      # Gestion des tournois
+│   └── VoteController.php            # Système de votes
+│
+├── DataFixtures/
+│   └── AppFixtures.php               # Données de test
+│
+├── Entity/
+│   ├── Comment.php                   # Entité commentaire
+│   ├── Game.php                      # Entité jeu
+│   ├── Media.php                     # Entité média (fichiers uploadés)
+│   ├── Team.php                      # Entité équipe
+│   ├── Tournament.php                # Entité tournoi
+│   ├── User.php                      # Entité utilisateur
+│   └── Vote.php                      # Entité vote
+│
+├── Form/
+│   ├── Admin/
+│   │   └── TeamType.php              # Formulaire équipe (admin)
+│   ├── CommentType.php               # Formulaire commentaire
+│   ├── GameType.php                  # Formulaire jeu
+│   ├── ProfilType.php                # Formulaire profil
+│   ├── RegistrationFormType.php      # Formulaire inscription
+│   ├── TeamType.php                  # Formulaire équipe
+│   └── TournamentType.php            # Formulaire tournoi
+│
+├── Repository/
+│   ├── CommentRepository.php
+│   ├── GameRepository.php
+│   ├── MediaRepository.php
+│   ├── TeamRepository.php
+│   ├── TournamentRepository.php
+│   ├── UserRepository.php
+│   └── VoteRepository.php
+│
+├── Service/
+│   └── FileUploader.php              # Service d'upload de fichiers
+│
+└── Kernel.php
+```
+
+---
+
+## ⚙️ Installation
+
+### Prérequis
+
+- PHP 8.2 ou supérieur
+- Composer
+- MySQL ou PostgreSQL
+- Node.js et npm
+- Symfony CLI (optionnel)
+
+### Étapes d'installation
+
+**1. Cloner le repository**
+```bash
+git clone https://github.com/votre-username/esport-tournament.git
+cd esport-tournament
+```
+
+**2. Installer les dépendances PHP**
+```bash
+composer install
+```
+
+**3. Configurer l'environnement**
+```bash
+cp .env .env.local
+```
+
+Modifier `.env.local` avec vos paramètres :
+```env
+APP_ENV=dev
+APP_SECRET=votre_secret_key
+DATABASE_URL="mysql://username:password@127.0.0.1:3306/esport_tournament?charset=utf8mb4"
+```
+
+**4. Créer la base de données**
+```bash
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+```
+
+**5. Charger les fixtures**
+```bash
+php bin/console doctrine:fixtures:load
+```
+
+**6. Installer les assets frontend**
+```bash
+npm install
+npm run build
+```
+
+**7. Lancer le serveur**
+```bash
+symfony server:start
+# ou
+php -S localhost:8000 -t public/
+```
+
+Application accessible sur : `http://127.0.0.1:8000`
+
+---
+
+## 👤 Comptes de test
+
+| Rôle | Email | Mot de passe |
+|------|-------|--------------|
+| Admin | admin@admin.com | admin |
+| User | user1@euser.com | user |
+| User | user2@user.com | user |
+
+---
+
+## 🔐 Rôles et permissions
+
+| Fonctionnalité | Visiteur | ROLE_USER | ROLE_ADMIN |
+|----------------|----------|-----------|------------|
+| Voir les tournois | ✅ | ✅ | ✅ |
+| Voir les équipes | ✅ | ✅ | ✅ |
+| S'inscrire | ✅ | ❌ | ❌ |
+| Se connecter | ✅ | ✅ | ✅ |
+| Créer un tournoi | ❌ | ✅ | ✅ |
+| Modifier ses tournois | ❌ | ✅ | ✅ |
+| Créer une équipe | ❌ | ✅ | ✅ |
+| Rejoindre une équipe | ❌ | ✅ | ✅ |
+| Commenter | ❌ | ✅ | ✅ |
+| Voter | ❌ | ✅ | ✅ |
+| Modifier son profil | ❌ | ✅ | ✅ |
+| Accès panel admin | ❌ | ❌ | ✅ |
+| Gérer tous les users | ❌ | ❌ | ✅ |
+| Gérer tous les tournois | ❌ | ❌ | ✅ |
+| Gérer toutes les équipes | ❌ | ❌ | ✅ |
+| Gérer les jeux | ❌ | ❌ | ✅ |
+| Modérer commentaires | ❌ | ❌ | ✅ |
+
+---
+
+## 🗄️ Modèle de données
+
+### User
+| Champ | Type | Description |
+|-------|------|-------------|
+| id | int | Identifiant unique |
+| email | string | Email (unique) |
+| password | string | Mot de passe hashé |
+| username | string | Pseudo |
+| roles | array | Rôles (ROLE_USER, ROLE_ADMIN) |
+| createdAt | datetime | Date de création |
+
+### Tournament
+| Champ | Type | Description |
+|-------|------|-------------|
+| id | int | Identifiant unique |
+| name | string | Nom du tournoi |
+| description | text | Description |
+| deadline | datetime | Date de fin |
+| deadlineJoin | datetime | Date limite d'inscription |
+| isActive | boolean | Statut actif |
+| owner | User | Créateur du tournoi |
+| game | Game | Jeu associé |
+| teams | Collection | Équipes inscrites |
+| medias | Collection | Fichiers uploadés |
+| createdAt | datetime | Date de création |
+
+### Team
+| Champ | Type | Description |
+|-------|------|-------------|
+| id | int | Identifiant unique |
+| name | string | Nom de l'équipe |
+| description | text | Description |
+| isActive | boolean | Statut actif |
+| owner | User | Propriétaire |
+| game | Game | Jeu principal |
+| users | Collection | Membres |
+| tournaments | Collection | Tournois inscrits |
+| createdAt | datetime | Date de création |
+
+### Game
+| Champ | Type | Description |
+|-------|------|-------------|
+| id | int | Identifiant unique |
+| name | string | Nom du jeu |
+| description | text | Description |
+| image | string | Image du jeu |
+
+### Comment
+| Champ | Type | Description |
+|-------|------|-------------|
+| id | int | Identifiant unique |
+| content | text | Contenu |
+| author | User | Auteur |
+| tournament | Tournament | Tournoi associé |
+| createdAt | datetime | Date de création |
+
+### Vote
+| Champ | Type | Description |
+|-------|------|-------------|
+| id | int | Identifiant unique |
+| user | User | Votant |
+| tournament | Tournament | Tournoi voté |
+| value | int | Valeur du vote |
+
+### Media
+| Champ | Type | Description |
+|-------|------|-------------|
+| id | int | Identifiant unique |
+| path | string | Chemin du fichier |
+| tournament | Tournament | Tournoi associé |
+
+---
+
+## 📝 Commandes utiles
+```bash
+# Cache
+php bin/console cache:clear
+
+# Base de données
+php bin/console doctrine:database:create
+php bin/console doctrine:database:drop --force
+php bin/console doctrine:migrations:migrate
+php bin/console doctrine:fixtures:load --purge-with-truncate
+
+# Génération
+php bin/console make:entity
+php bin/console make:controller
+php bin/console make:form
+php bin/console make:migration
+
+# Debug
+php bin/console debug:router
+php bin/console debug:container
+
+# Assets
+npm run watch
+npm run build
+```
+
+---
+
+## 🐛 Résolution de problèmes
+
+### Erreur d'upload de fichiers
+Vérifier les permissions du dossier `public/uploads/` :
+```bash
+chmod -R 755 public/uploads/
+```
+
+### Erreur de connexion BDD
+Vérifier le fichier `.env.local` et tester la connexion :
+```bash
+php bin/console doctrine:database:create
+```
+
+---
+
+## 📄 Licence
+
+Projet scolaire - Tous droits réservés.
+
+---
+
+## 👨‍💻 Auteurs
+
+Projet réalisé par :
+- **Benjamin LACAZE**
+- **Sofiane ROS**
+- **Robin SOUNIER**
+
+Développé avec ❤️ pour la communauté esport.

@@ -18,6 +18,11 @@ class VoteController extends AbstractController
 {
     /**
      * Méthode pour ajouter un vote à un tournoi
+     * @param int $id
+     * @param VoteRepository $voteRepository
+     * @param TournamentRepository $tournamentRepository
+     * @param EntityManagerInterface $entityManager
+     * @return JsonResponse
      */
     #[Route('/tournament/{id}/vote', name: 'app_tournament_vote_toggle', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]

@@ -17,6 +17,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 #[IsGranted('ROLE_ADMIN')]
 final class AdminController extends AbstractController
 {
+    /**
+     * Dasboard admin
+     * @param UserRepository $userRepository
+     * @param TournamentRepository $tournamentRepository
+     * @param VoteRepository $voteRepository
+     * @param CommentRepository $commentRepository
+     * @param GameRepository $gameRepository
+     * @param TeamRepository $teamRepository
+     * @return Response
+     */
     #[Route('/', name: 'app_admin_dashboard')]
     public function dashboard(
         UserRepository $userRepository,
@@ -45,7 +55,7 @@ final class AdminController extends AbstractController
             'teams' => [
                 'total' => $teamRepository->count([]),
                 'active' => $teamRepository->count(['isActive' => true]),
-                
+
             ],
             ];
 
@@ -56,7 +66,7 @@ final class AdminController extends AbstractController
             // recuperer les dernier utilisateur inscrits
             $recentUsers = $userRepository->findBy(['isActive' => true], ['createdAt' => 'DESC'], 5);
 
-        
+
 
 
 

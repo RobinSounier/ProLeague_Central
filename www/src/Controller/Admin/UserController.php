@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,15 +17,23 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
+    /**
+     * Liste admin des utilisateurs
+     * @param UserRepository $userRepository
+     * @param Request $request
+     * @return Response
+     */
     #[Route('/user', name: 'app_admin_user')]
-    public function index(UserRepository $userRepository, Request $request): Response
+    public function index(UserRepository $userRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        // on recupère les parametre de recherche ou de tri depuis l'url
+        // Récupère les paramètres de recherche ou de tri depuis l'url
         $search = $request->query->get('search', '');
         $filter = $request->query->get('filter', 'all'); // all, active, inactive, admins
 
-        //on recupère tous les utilisateur
+        // Récupère tous les utilisateurs
         $users = $userRepository->findAll();
+
+        // IMPORTANT : Filtrer AVANT de paginer
 
         // Filtre de tri
         if ($filter === 'active') {
@@ -35,7 +44,7 @@ final class UserController extends AbstractController
             $users = array_filter($users, fn($u) => in_array('ROLE_ADMIN', $u->getRoles()));
         }
 
-        //Recherche
+        // Recherche
         if ($search) {
             $users = array_filter($users, function ($user) use ($search) {
                 return stripos($user->getPseudo(), $search) !== false
@@ -43,20 +52,32 @@ final class UserController extends AbstractController
             });
         }
 
-        //reindexer le tableau après filtrage
+        // Réindexer le tableau après filtrage
         $users = array_values($users);
 
+        // Paginer APRÈS avoir filtré
+        $pagination = $paginator->paginate(
+            $users,
+            $request->query->getInt('page', 1),
+            5
+        );
+
         return $this->render('admin/user/index.html.twig', [
-            'users' => $users,
+            'pagination' => $pagination,
             'search' => $search,
-            'filter' => $filter
+            'filter' => $filter,
         ]);
     }
 
+    /**
+     * Voir la page d'un utilisateur
+     * @param User $user
+     * @return Response
+     */
     #[Route('/user/{id}', name: 'app_admin_user_show')]
     public function show(User $user): Response
     {
-            
+
         $ownerTeamsCount = array_filter($user->getTeams()->toArray(), function ($team) use ($user) {
             return $team->getOwner() === $user;
         });
@@ -65,7 +86,7 @@ final class UserController extends AbstractController
             'user' => $user,
             'ownerTeamsCount' => count($ownerTeamsCount),
         ]);
-    
+
 
     }
 
