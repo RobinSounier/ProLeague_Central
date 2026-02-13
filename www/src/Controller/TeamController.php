@@ -304,6 +304,13 @@ final class TeamController extends AbstractController
         return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
     }
 
+    /**
+     * Méthode pour le owner de l'équipe de voir la liste des membres et pouvoir les retirer
+     * @param Team $team
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{id}/member', name: 'app_team_members', methods: ['GET'])]
     public function members(Team $team, Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -313,8 +320,8 @@ final class TeamController extends AbstractController
         $owner = $team->getOwner();
 
         // Vérification : Seul le owner peut retirer un membre
-        if ($owner !== $currentUser) {
-            $this->addFlash('danger', 'Acces interdit.');
+        if ($owner !== $currentUser && !$this->isGranted('ROLE_ADMIN')) {
+            $this->addFlash('danger', 'Access refusé.');
             return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
         }
 
@@ -325,6 +332,14 @@ final class TeamController extends AbstractController
         ]);
     }
 
+    /**
+     * Méthode pour le owner de l'équipe de retirer un membre
+     * @param Team $team
+     * @param User $userToRemove
+     * @param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
     #[Route('/{teamId}/member/{userId}/leave', name: 'app_team_member_leave', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     public function leaveMember(
@@ -339,7 +354,7 @@ final class TeamController extends AbstractController
         $owner = $team->getOwner();
 
         // Vérification : Seul le owner peut retirer un membre
-        if ($owner !== $currentUser) {
+        if ($owner !== $currentUser && !$this->isGranted('ROLE_ADMIN')) {
             $this->addFlash('danger', 'Seul le propriétaire de l\'équipe peut retirer un membre.');
             return $this->redirectToRoute('app_team_show', ['id' => $team->getId()]);
         }
